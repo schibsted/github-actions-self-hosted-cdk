@@ -1,0 +1,99 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true
+    }
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "import",
+    "promise",
+    "jest"
+  ],
+  "extends": [
+    "eslint-config-airbnb",
+    "eslint-config-prettier"
+  ],
+  "rules": {
+    "no-duplicate-imports": "off",
+    "no-unused-vars": "off",
+    "no-plusplus": "off",
+    "no-new": "off",
+    "no-await-in-loop": "off",
+    "import/extensions": [
+      "error",
+      "always",
+      {
+        "js": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
+    "import/no-duplicates": "error",
+    "import/no-default-export": "error",
+    "import/prefer-default-export": "off",
+    "promise/always-return": "error",
+    "promise/no-return-wrap": "error",
+    "promise/param-names": "error",
+    "promise/catch-or-return": "error",
+    "promise/no-native": "off",
+    "promise/no-nesting": "warn",
+    "promise/no-promise-in-callback": "warn",
+    "promise/no-callback-in-promise": "warn",
+    "promise/avoid-new": "warn",
+    "react/jsx-filename-extension": "off",
+    "react/prefer-stateless-function": "off",
+    "jest/no-disabled-tests": "warn",
+    "jest/no-focused-tests": "error",
+    "jest/no-identical-title": "error",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/adjacent-overload-signatures": "error",
+    "@typescript-eslint/member-delimiter-style": "error",
+    "@typescript-eslint/consistent-type-assertions": "error",
+    "@typescript-eslint/no-array-constructor": "error",
+    "@typescript-eslint/no-empty-interface": "error",
+    "@typescript-eslint/no-inferrable-types": [
+      "error",
+      {
+        "ignoreProperties": false,
+        "ignoreParameters": true
+      }
+    ],
+    "@typescript-eslint/type-annotation-spacing": "error"
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".js",
+          ".ts",
+          ".tsx"
+        ]
+      }
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx"
+      ]
+    }
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.ts",
+        "**/*.tsx"
+      ],
+      "rules": {
+        "no-undef": "off"
+      }
+    }
+  ],
+  "env": {
+    "es6": true,
+    "jest": true
+  }
+}
