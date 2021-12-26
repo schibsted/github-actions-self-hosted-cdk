@@ -1,5 +1,6 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Vpc, SubnetType, InstanceType } from 'aws-cdk-lib/aws-ec2';
+import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import {
   Cluster,
   FargateTaskDefinition,
@@ -8,6 +9,11 @@ import {
   Secret,
   FargateService,
   FargatePlatformVersion,
+  EcsOptimizedImage,
+  AsgCapacityProvider,
+  Ec2TaskDefinition,
+  Ec2Service,
+  ContainerDefinition,
 } from 'aws-cdk-lib/aws-ecs';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
@@ -17,14 +23,82 @@ export class GithubActionsRunnerStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new Vpc(this, 'GitHubActionsRunnerVpc', {
-      maxAzs: 1, // Default is all AZs in region
+    const vpc = new Vpc(this, 'Vpc', {
+      maxAzs: 1,
+      subnetConfiguration: [
+        {
+          name: 'PublicSubnet',
+          subnetType: SubnetType.PUBLIC,
+        },
+      ],
     });
+
+    const autoScalingGroup = new AutoScalingGroup(this, 'Asg', {
+      vpc,
+      machineImage: EcsOptimizedImage.amazonLinux2(),
+      instanceType: new InstanceType('t3.micro'),
+      minCapacity: 0,
+      maxCapacity: 10,
+    });
+
+    const capacityProvider = new AsgCapacityProvider(
+      this,
+      'AsgCapacityProvider',
+      {
+        autoScalingGroup,
+        enableManagedTerminationProtection: false,
+        capacityProviderName: 'GitHubActionsRunnerCapacityProvider',
+      },
+    );
 
     const cluster = new Cluster(this, 'GitHubActionsRunnerCluster', {
       vpc,
     });
 
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    const taskDefinition = new Ec2TaskDefinition(
+      this,
+      'GitHubActionsRunnerTaskDefinition',
+    );
+
+    const container = new ContainerDefinition(this, 'Container', {
+      image: ContainerImage.fromAsset(path.resolve(__dirname, '../image')),
+      logging: LogDrivers.awsLogs({ streamPrefix: 'GitHubActionsRunner' }),
+      memoryReservationMiB: 512,
+      taskDefinition,
+    });
+
+    // taskDefinition.addVolume({
+    //   name: 'docker_dock',
+    //   host: {
+    //     sourcePath: '/var/run/docker.sock',
+    //   }
+    // });
+
+    // container.addMountPoints({
+    //   containerPath: '/var/run/docker.sock',
+    //   sourceVolume: 'docker_sock',
+    //   readOnly: true,
+    // });
+
+    new Ec2Service(this, 'Service', {
+      serviceName: 'GitHubActionsRunnerService',
+      cluster,
+      taskDefinition,
+      enableECSManagedTags: true,
+      circuitBreaker: {
+        rollback: true,
+      },
+      capacityProviderStrategies: [
+        {
+          capacityProvider: 'GitHubActionsRunnerCapacityProvider',
+          weight: 1,
+        },
+      ],
+    });
+
+    /*
     const taskDefinition = new FargateTaskDefinition(
       this,
       'GitHubActionsRunnerTaskDefinition',
@@ -62,5 +136,6 @@ export class GithubActionsRunnerStack extends Stack {
       taskDefinition,
       platformVersion: FargatePlatformVersion.VERSION1_4,
     });
+    */
   }
 }

@@ -6,7 +6,7 @@ import { GithubActionsRunnerStack } from '../lib';
 const app = new App();
 new GithubActionsRunnerStack(app, 'GithubActionsRunnerStack', {
   env: {
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION,
+    account: '466464767973',
+    region: 'eu-north-1',
   },
 });

@@ -1,0 +1,247 @@
+{
+  "version": "15.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "GithubActionsRunnerStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "GithubActionsRunnerStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "GithubActionsRunnerStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://466464767973/eu-north-1",
+      "properties": {
+        "templateFile": "GithubActionsRunnerStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::466464767973:role/cdk-hnb659fds-deploy-role-466464767973-eu-north-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::466464767973:role/cdk-hnb659fds-cfn-exec-role-466464767973-eu-north-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-466464767973-eu-north-1/107b7b73657b133e03bee36338d33e03728b4650448fb4b5b7f95fcdd157f54e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": ["GithubActionsRunnerStack.assets"]
+      },
+      "dependencies": ["GithubActionsRunnerStack.assets"],
+      "metadata": {
+        "/GithubActionsRunnerStack/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/GithubActionsRunnerStack/Vpc/PublicSubnetSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnetSubnet1SubnetC1C3749F"
+          }
+        ],
+        "/GithubActionsRunnerStack/Vpc/PublicSubnetSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnetSubnet1RouteTable54741E8C"
+          }
+        ],
+        "/GithubActionsRunnerStack/Vpc/PublicSubnetSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnetSubnet1RouteTableAssociation12F076E3"
+          }
+        ],
+        "/GithubActionsRunnerStack/Vpc/PublicSubnetSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnetSubnet1DefaultRoute8657BB78"
+          }
+        ],
+        "/GithubActionsRunnerStack/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/GithubActionsRunnerStack/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgInstanceSecurityGroupC53F1492"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgInstanceRole7946982D"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgInstanceRoleDefaultPolicy16A5BCED"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgInstanceProfileBCEDB827"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgLaunchConfig6D4F96BB"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgASGD1D7B4E2"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgDrainECSHookFunctionServiceRoleE29C0A10"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgDrainECSHookFunctionServiceRoleDefaultPolicy5A6287A8"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgDrainECSHookFunctionB279B86D"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/DrainECSHook/Function/AllowInvoke:GithubActionsRunnerStackAsgLifecycleHookDrainHookTopicD8800ABF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgDrainECSHookFunctionAllowInvokeGithubActionsRunnerStackAsgLifecycleHookDrainHookTopicD8800ABF9C200B11"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgDrainECSHookFunctionTopicE4D99605"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgLifecycleHookDrainHookTopicF022C93B"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgLifecycleHookDrainHookRoleC6879CD5"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgLifecycleHookDrainHookRoleDefaultPolicyE3034793"
+          }
+        ],
+        "/GithubActionsRunnerStack/Asg/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgLifecycleHookDrainHookB048D76B"
+          }
+        ],
+        "/GithubActionsRunnerStack/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/GithubActionsRunnerStack/AsgCapacityProvider/AsgCapacityProvider": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgCapacityProvider760D11D9"
+          }
+        ],
+        "/GithubActionsRunnerStack/GitHubActionsRunnerCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GitHubActionsRunnerCluster5CD8DD12"
+          }
+        ],
+        "/GithubActionsRunnerStack/GitHubActionsRunnerCluster/GitHubActionsRunnerCluster": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GitHubActionsRunnerCluster23B95B13"
+          }
+        ],
+        "/GithubActionsRunnerStack/GitHubActionsRunnerTaskDefinition/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GitHubActionsRunnerTaskDefinitionTaskRoleAF56F3C8"
+          }
+        ],
+        "/GithubActionsRunnerStack/GitHubActionsRunnerTaskDefinition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GitHubActionsRunnerTaskDefinitionAEB9D8FA"
+          }
+        ],
+        "/GithubActionsRunnerStack/GitHubActionsRunnerTaskDefinition/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GitHubActionsRunnerTaskDefinitionExecutionRoleF608A770"
+          }
+        ],
+        "/GithubActionsRunnerStack/GitHubActionsRunnerTaskDefinition/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GitHubActionsRunnerTaskDefinitionExecutionRoleDefaultPolicy58127E5F"
+          }
+        ],
+        "/GithubActionsRunnerStack/Container/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ContainerLogGroupE6FD74A4"
+          }
+        ],
+        "/GithubActionsRunnerStack/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceD69D759B"
+          }
+        ],
+        "/GithubActionsRunnerStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/GithubActionsRunnerStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/GithubActionsRunnerStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "GithubActionsRunnerStack"
+    }
+  }
+}
