@@ -3,12 +3,9 @@ import { Vpc, SubnetType, InstanceType } from 'aws-cdk-lib/aws-ec2';
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import {
   Cluster,
-  FargateTaskDefinition,
   ContainerImage,
   LogDrivers,
   Secret,
-  FargateService,
-  FargatePlatformVersion,
   EcsOptimizedImage,
   AsgCapacityProvider,
   Ec2TaskDefinition,
@@ -63,30 +60,53 @@ export class GithubActionsRunnerStack extends Stack {
     );
 
     const container = new ContainerDefinition(this, 'Container', {
+      taskDefinition,
       image: ContainerImage.fromAsset(path.resolve(__dirname, '../image')),
       logging: LogDrivers.awsLogs({ streamPrefix: 'GitHubActionsRunner' }),
       memoryReservationMiB: 512,
-      taskDefinition,
+      secrets: {
+        GITHUB_TOKEN: Secret.fromSsmParameter(
+          StringParameter.fromSecureStringParameterAttributes(
+            this,
+            'GitHubAccessToken',
+            {
+              parameterName: '/github/actions/token',
+              version: 0,
+            },
+          ),
+        ),
+        RUNNER_CONTEXT: Secret.fromSsmParameter(
+          StringParameter.fromSecureStringParameterAttributes(
+            this,
+            'GitHubActionsRunnerContext',
+            {
+              parameterName: '/github/actions/context',
+              version: 0,
+            },
+          ),
+        ),
+      },
     });
 
-    // taskDefinition.addVolume({
-    //   name: 'docker_dock',
-    //   host: {
-    //     sourcePath: '/var/run/docker.sock',
-    //   }
-    // });
+    taskDefinition.addVolume({
+      name: 'docker_sock',
+      host: {
+        sourcePath: '/var/run/docker.sock',
+      },
+    });
 
-    // container.addMountPoints({
-    //   containerPath: '/var/run/docker.sock',
-    //   sourceVolume: 'docker_sock',
-    //   readOnly: true,
-    // });
+    container.addMountPoints({
+      containerPath: '/var/run/docker.sock',
+      sourceVolume: 'docker_sock',
+      readOnly: true,
+    });
 
     new Ec2Service(this, 'Service', {
       serviceName: 'GitHubActionsRunnerService',
       cluster,
       taskDefinition,
       enableECSManagedTags: true,
+      desiredCount: 0,
       circuitBreaker: {
         rollback: true,
       },
@@ -97,45 +117,5 @@ export class GithubActionsRunnerStack extends Stack {
         },
       ],
     });
-
-    /*
-    const taskDefinition = new FargateTaskDefinition(
-      this,
-      'GitHubActionsRunnerTaskDefinition',
-    );
-
-    taskDefinition.addContainer('GitHubActionsRunnerContainer', {
-      image: ContainerImage.fromAsset(path.resolve(__dirname, '../image')),
-      logging: LogDrivers.awsLogs({ streamPrefix: 'GitHubActionsRunner' }),
-      secrets: {
-        GITHUB_ACCESS_TOKEN: Secret.fromSsmParameter(
-          StringParameter.fromSecureStringParameterAttributes(
-            this,
-            'GitHubAccessToken',
-            {
-              parameterName: 'GITHUB_ACCESS_TOKEN',
-              version: 0,
-            },
-          ),
-        ),
-        GITHUB_ACTIONS_RUNNER_CONTEXT: Secret.fromSsmParameter(
-          StringParameter.fromSecureStringParameterAttributes(
-            this,
-            'GitHubActionsRunnerContext',
-            {
-              parameterName: 'GITHUB_ACTIONS_RUNNER_CONTEXT',
-              version: 0,
-            },
-          ),
-        ),
-      },
-    });
-
-    new FargateService(this, 'GitHubActionsRunnerService', {
-      cluster,
-      taskDefinition,
-      platformVersion: FargatePlatformVersion.VERSION1_4,
-    });
-    */
   }
 }

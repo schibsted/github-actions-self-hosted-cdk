@@ -3,13 +3,13 @@
 RUNNER_NAME=${RUNNER_NAME:-default}
 RUNNER_WORKDIR=${RUNNER_WORKDIR:-_work}
 
-if [[ -z "${GITHUB_ACCESS_TOKEN}" || -z "${GITHUB_ACTIONS_RUNNER_CONTEXT}" ]]; then
+if [[ -z "${GITHUB_TOKEN}" || -z "${RUNNER_CONTEXT}" ]]; then
   echo 'One of the mandatory parameters is missing. Quit!'
   exit 1
 else
-  AUTH_HEADER="Authorization: token ${GITHUB_ACCESS_TOKEN}"
-  USERNAME=$(cut -d/ -f4 <<< ${GITHUB_ACTIONS_RUNNER_CONTEXT})
-  REPOSITORY=$(cut -d/ -f5 <<< ${GITHUB_ACTIONS_RUNNER_CONTEXT})
+  AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
+  USERNAME=$(cut -d/ -f4 <<< ${RUNNER_CONTEXT})
+  REPOSITORY=$(cut -d/ -f5 <<< ${RUNNER_CONTEXT})
 
   if [[ -z "${REPOSITORY}" ]]; then 
     TOKEN_REGISTRATION_URL="https://api.github.com/orgs/${USERNAME}/actions/runners/registration-token"
