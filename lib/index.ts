@@ -13,6 +13,8 @@ import {
   ContainerDefinition,
 } from 'aws-cdk-lib/aws-ecs';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { RestApi, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
+import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import path from 'path';
 
@@ -117,5 +119,15 @@ export class GithubActionsRunnerStack extends Stack {
         },
       ],
     });
+
+    const func = new Function(this, 'WebhookLambda', {
+      runtime: Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      code: Code.fromAsset(path.join(__dirname, 'lambda')),
+    });
+    const api = new RestApi(this, 'api');
+    const resource = api.root.addResource('webhook');
+    resource.addMethod('POST',  new LambdaIntegration(func));
+
   }
 }
