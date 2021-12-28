@@ -27,5 +27,5 @@ else
 fi
 
 echo "Configuring..."
-./config.sh --url "https://github.schibsted.io/spt-mediaplatform-labs" --token "${RUNNER_TOKEN}" --name "${RUNNER_NAME}" --work "${RUNNER_WORKDIR}"
+./config.sh --url "https://github.schibsted.io/spt-mediaplatform-labs" --token "${RUNNER_TOKEN}" --work "${RUNNER_WORKDIR}" --ephemeral
 ./run.sh
