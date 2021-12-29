@@ -15,7 +15,7 @@ import {
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { RestApi, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
-import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
+import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import path from 'path';
 
@@ -126,10 +126,11 @@ export class GithubActionsRunnerStack extends Stack {
       handler: 'index.handler',
       code: Code.fromAsset(path.join(__dirname, 'lambda')),
     });
-    func.role?.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonECS_FullAccess'));
+    func.role?.addManagedPolicy(
+      ManagedPolicy.fromAwsManagedPolicyName('AmazonECS_FullAccess'),
+    );
     const api = new RestApi(this, 'api');
     const resource = api.root.addResource('webhook');
-    resource.addMethod('POST',  new LambdaIntegration(func));
-
+    resource.addMethod('POST', new LambdaIntegration(func));
   }
 }
