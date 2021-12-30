@@ -15,7 +15,7 @@ import {
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { RestApi, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
-import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
+import { PolicyStatement, Policy } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import path from 'path';
 
@@ -104,7 +104,7 @@ export class GithubActionsRunnerStack extends Stack {
       readOnly: true,
     });
 
-    new Ec2Service(this, 'Service', {
+    const service = new Ec2Service(this, 'Service', {
       serviceName: 'GitHubActionsRunnerService',
       cluster,
       taskDefinition,
@@ -126,8 +126,29 @@ export class GithubActionsRunnerStack extends Stack {
       handler: 'index.handler',
       code: Code.fromAsset(path.join(__dirname, 'lambda')),
     });
-    func.role?.addManagedPolicy(
-      ManagedPolicy.fromAwsManagedPolicyName('AmazonECS_FullAccess'),
+    func.role?.attachInlinePolicy(
+      new Policy(this, 'run-task-policy', {
+        statements: [
+          new PolicyStatement({
+            actions: ['ecs:RunTask'],
+            resources: ['*'],
+            conditions: {
+              ArnEquals: {
+                'ecs:cluster': cluster.clusterArn,
+              },
+            },
+          }),
+          new PolicyStatement({
+            actions: ['iam:PassRole'],
+            resources: ['*'],
+            conditions: {
+              StringLike: {
+                'iam:PassedToService': 'ecs-tasks.amazonaws.com',
+              },
+            },
+          }),
+        ],
+      }),
     );
     const api = new RestApi(this, 'api');
     const resource = api.root.addResource('webhook');
