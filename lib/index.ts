@@ -19,8 +19,18 @@ import { PolicyStatement, Policy } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import path from 'path';
 
+export interface GithubActionsRunnerParams extends StackProps {
+  instanceType?: string;
+  minCapacity?: number;
+  maxCapacity?: number;
+  runnerMemory?: number;
+  context: string;
+  tokenSsmPath: string;
+  private?: boolean;
+}
+
 export class GithubActionsRunnerStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props: GithubActionsRunnerParams) {
     super(scope, id, props);
 
     const vpc = new Vpc(this, 'Vpc', {
@@ -36,9 +46,9 @@ export class GithubActionsRunnerStack extends Stack {
     const autoScalingGroup = new AutoScalingGroup(this, 'Asg', {
       vpc,
       machineImage: EcsOptimizedImage.amazonLinux2(),
-      instanceType: new InstanceType('t3.micro'),
-      minCapacity: 0,
-      maxCapacity: 10,
+      instanceType: new InstanceType(props.instanceType ?? 't3.micro'),
+      minCapacity: props.minCapacity ?? 0,
+      maxCapacity: props.maxCapacity ?? 10,
     });
 
     const capacityProvider = new AsgCapacityProvider(
@@ -66,24 +76,17 @@ export class GithubActionsRunnerStack extends Stack {
       taskDefinition,
       image: ContainerImage.fromAsset(path.resolve(__dirname, '../image')),
       logging: LogDrivers.awsLogs({ streamPrefix: 'GitHubActionsRunner' }),
-      memoryReservationMiB: 512,
+      memoryReservationMiB: props.runnerMemory ?? 512,
+      environment: {
+        RUNNER_CONTEXT: props.context,
+      },
       secrets: {
         GITHUB_TOKEN: Secret.fromSsmParameter(
           StringParameter.fromSecureStringParameterAttributes(
             this,
             'GitHubAccessToken',
             {
-              parameterName: '/github/actions/token',
-              version: 0,
-            },
-          ),
-        ),
-        RUNNER_CONTEXT: Secret.fromSsmParameter(
-          StringParameter.fromSecureStringParameterAttributes(
-            this,
-            'GitHubActionsRunnerContext',
-            {
-              parameterName: '/github/actions/context',
+              parameterName: props.tokenSsmPath,
               version: 0,
             },
           ),
@@ -125,9 +128,14 @@ export class GithubActionsRunnerStack extends Stack {
       runtime: Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: Code.fromAsset(path.join(__dirname, 'lambda')),
+      environment: {
+        cluster: cluster.clusterName,
+        taskDefinition: taskDefinition.family,
+        capacityProvider: capacityProvider.capacityProviderName,
+      },
     });
     func.role?.attachInlinePolicy(
-      new Policy(this, 'run-task-policy', {
+      new Policy(this, 'RunTaskPolicy', {
         statements: [
           new PolicyStatement({
             actions: ['ecs:RunTask'],

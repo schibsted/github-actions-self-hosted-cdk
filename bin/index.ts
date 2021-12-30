@@ -9,4 +9,6 @@ new GithubActionsRunnerStack(app, 'GithubActionsRunnerStack', {
     account: '466464767973',
     region: 'eu-north-1',
   },
+  context: 'spt-mediaplatform-labs',
+  tokenSsmPath: '/github/actions/token',
 });
