@@ -4,7 +4,7 @@ RUNNER_WORKDIR=${RUNNER_WORKDIR:-_work}
 
 deregister_runner() {
   echo "Exit signal caught, deregistering runner..."
-  ./config.sh remove --token "${RUNNER_TOKEN}"
+  ./config.sh remove --unattended --token "${RUNNER_TOKEN}"
   exit
 }
 
@@ -37,5 +37,6 @@ echo "Configuring..."
   --unattended \
   --ephemeral
 
-trap deregister_runner SIGINT SIGQUIT SIGTERM INT TERM QUIT
-timeout --signal=15 1m ./run.sh
+trap deregister_runner SIGINT SIGQUIT SIGTERM INT QUIT TERM
+
+./run.sh & wait $!
