@@ -2,6 +2,12 @@
 
 RUNNER_WORKDIR=${RUNNER_WORKDIR:-_work}
 
+deregister_runner() {
+  echo "Exit signal caught, deregistering runner..."
+  ./config.sh remove --token "${RUNNER_TOKEN}"
+  exit
+}
+
 if [[ -z "${GITHUB_TOKEN}" || -z "${RUNNER_CONTEXT}" ]]; then
   echo 'One of the mandatory parameters is missing. Quitting...'
   exit 1
@@ -24,5 +30,12 @@ else
 fi
 
 echo "Configuring..."
-./config.sh --url "https://github.schibsted.io/${RUNNER_CONTEXT}" --token "${RUNNER_TOKEN}" --work "${RUNNER_WORKDIR}" --ephemeral
-./run.sh
+./config.sh --url "https://github.schibsted.io/${RUNNER_CONTEXT}" \
+  --token "${RUNNER_TOKEN}" \
+  --labels "yes-this-is-dog" \
+  --work "${RUNNER_WORKDIR}" \
+  --unattended \
+  --ephemeral
+
+trap deregister_runner SIGINT SIGQUIT SIGTERM INT TERM QUIT
+timeout --signal=15 1m ./run.sh
