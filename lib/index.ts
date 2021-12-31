@@ -24,6 +24,7 @@ export interface GithubActionsRunnerParams extends StackProps {
   minCapacity?: number;
   maxCapacity?: number;
   runnerMemory?: number;
+  runnerTimeout?: string;
   context: string;
   tokenSsmPath: string;
   private?: boolean;
@@ -79,6 +80,7 @@ export class GithubActionsRunnerStack extends Stack {
       memoryReservationMiB: props.runnerMemory ?? 512,
       environment: {
         RUNNER_CONTEXT: props.context,
+        RUNNER_TIMEOUT: props.runnerTimeout ?? '60m',
       },
       secrets: {
         GITHUB_TOKEN: Secret.fromSsmParameter(

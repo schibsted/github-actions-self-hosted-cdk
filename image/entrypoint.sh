@@ -1,6 +1,7 @@
 #!/bin/bash
 
 RUNNER_WORKDIR=${RUNNER_WORKDIR:-_work}
+RUNNER_TIMEOUT=${RUNNER_TIMEOUT:-60m}
 
 deregister_runner() {
   echo "Exit signal caught, deregistering runner..."
@@ -39,4 +40,5 @@ echo "Configuring..."
 
 trap deregister_runner SIGINT SIGQUIT SIGTERM INT QUIT TERM
 
-./run.sh & wait $!
+timeout --signal=15 "${RUNNER_TIMEOUT}" ./run.sh & wait $! && exit
+deregister_runner
