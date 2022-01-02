@@ -1,5 +1,21 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
-import { Vpc, SubnetType, InstanceType } from 'aws-cdk-lib/aws-ec2';
+import {
+  Vpc,
+  Peer,
+  Port,
+  SubnetType,
+  InstanceInitiatedShutdownBehavior,
+  OperatingSystemType,
+  InstanceType,
+  UserData,
+  MachineImage,
+  AmazonLinuxGeneration,
+  MultipartUserData,
+  MultipartBody,
+  LaunchTemplate,
+  AmazonLinuxImage,
+  SecurityGroup,
+} from 'aws-cdk-lib/aws-ec2';
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import {
   Cluster,
@@ -163,5 +179,61 @@ export class GithubActionsRunnerStack extends Stack {
     const api = new RestApi(this, 'api');
     const resource = api.root.addResource('webhook');
     resource.addMethod('POST', new LambdaIntegration(func));
+
+    //const bootHookConf = UserData.forLinux();
+    //bootHookConf.addCommands('cloud-init-per once docker_options echo \'OPTIONS="${OPTIONS} --storage-opt dm.basesize=40G"\' >> /etc/sysconfig/docker');
+    const setupCommands = UserData.forLinux();
+    setupCommands.addCommands('sudo yum install curl');
+    setupCommands.addCommands('sudo yum install jq');
+    const multipartUserData = new MultipartUserData();
+    //multipartUserData.addPart(MultipartBody.fromUserData(bootHookConf, 'text/cloud-boothook; charset="us-ascii"'));
+    multipartUserData.addPart(MultipartBody.fromUserData(setupCommands));
+
+    // const userDataScript = readFileSync('./lib/user-data.sh', 'utf8');
+    // // 👇 add the User Data script to the Instance
+    // ec2Instance.addUserData(userDataScript);
+    //multipartUserData.add
+
+    // const ec2Vpc = new Vpc(this, 'Ec2Vpc', {
+    //   cidr: '10.0.0.0/16',
+    //   natGateways: 0,
+    //   /*
+    //   subnetConfiguration: [
+    //     {name: 'public', cidrMask: 24, subnetType: SubnetType.PUBLIC},
+    //   ],*/
+    // });
+
+    const defaultVpc = Vpc.fromLookup(this, 'DefaultVpc', {
+      isDefault: true,
+    });
+    const defaultSecurityGroup = new SecurityGroup(this, 'DefaultSG', {
+      vpc: defaultVpc,
+      allowAllOutbound: true,
+      securityGroupName: 'gh-default-sg',
+    });
+    defaultSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
+
+    // const securityGroup = new SecurityGroup(this, 'SecurityGroup', {
+    //   vpc,
+    //   allowAllOutbound: true,
+    // });
+    // securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
+    new LaunchTemplate(this, 'LaunchTemplate', {
+      launchTemplateName: 'GithubActionsRunnerTemplate',
+      userData: multipartUserData,
+      instanceType: new InstanceType('t3.micro'),
+      // machineImage: MachineImage.genericLinux({
+      //   'eu-north-1': 'ami-092cce4a19b438926',
+      // }),
+      machineImage: MachineImage.fromSsmParameter(
+        '/aws/service/canonical/ubuntu/server/focal/stable/current/amd64/hvm/ebs-gp2/ami-id',
+      ),
+      // machineImage: MachineImage.latestAmazonLinux({
+      //   generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+      // }),
+      instanceInitiatedShutdownBehavior:
+        InstanceInitiatedShutdownBehavior.TERMINATE,
+      securityGroup: defaultSecurityGroup,
+    });
   }
 }
