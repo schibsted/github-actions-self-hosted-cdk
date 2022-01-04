@@ -28,7 +28,14 @@ import {
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { RestApi, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
-import { PolicyStatement, Policy } from 'aws-cdk-lib/aws-iam';
+import {
+  PolicyStatement,
+  Policy,
+  Role,
+  ServicePrincipal,
+  ManagedPolicy,
+  PolicyDocument,
+} from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import path from 'path';
 import { readFileSync } from 'fs';
@@ -201,6 +208,19 @@ export class GithubActionsRunnerStack extends Stack {
       instanceInitiatedShutdownBehavior:
         InstanceInitiatedShutdownBehavior.TERMINATE,
       securityGroup: defaultSecurityGroup,
+      role: new Role(this, 'RunnerRole', {
+        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+        inlinePolicies: {
+          'ssm-policy': new PolicyDocument({
+            statements: [
+              new PolicyStatement({
+                actions: ['ssm:*'],
+                resources: ['*'],
+              }),
+            ],
+          }),
+        },
+      }),
     });
   }
 }

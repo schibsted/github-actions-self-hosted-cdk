@@ -1,12 +1,11 @@
 #!/bin/bash
 
 sudo apt-get update -y
-sudo apt-get install -y curl jq
+sudo apt-get install -y curl jq awscli
 
 RUNNER_WORKDIR=${RUNNER_WORKDIR:-_work}
 RUNNER_TIMEOUT=${RUNNER_TIMEOUT:-60m}
 
-GITHUB_TOKEN=
 RUNNER_CONTEXT=spt-mediaplatform-labs
 
 cd /home/ubuntu
@@ -22,30 +21,26 @@ install() {
 deregister_runner() {
   echo "Exit signal caught, deregistering runner..."
   sudo -u ubuntu ./config.sh remove --unattended --token "${RUNNER_TOKEN}"
-  exit
 }
 
 init() {
-  if [[ -z "${GITHUB_TOKEN}" || -z "${RUNNER_CONTEXT}" ]]; then
-    echo 'One of the mandatory parameters is missing. Quitting...'
-    exit 1
+
+  GITHUB_TOKEN=$(aws ssm get-parameters --name /github/actions/token --region eu-north-1 --with-decryption | jq -r .Parameters[0].Value)
+  AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
+  ORG=$(cut -d/ -f1 <<< ${RUNNER_CONTEXT})
+  REPO=$(cut -d/ -f2 <<< ${RUNNER_CONTEXT})
+
+  if [[ -z "${REPOSITORY}" ]]; then
+    TOKEN_REGISTRATION_URL="https://github.schibsted.io/api/v3/orgs/${ORG}/actions/runners/registration-token"
   else
-    AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
-    ORG=$(cut -d/ -f1 <<< ${RUNNER_CONTEXT})
-    REPO=$(cut -d/ -f2 <<< ${RUNNER_CONTEXT})
-
-    if [[ -z "${REPOSITORY}" ]]; then
-      TOKEN_REGISTRATION_URL="https://github.schibsted.io/api/v3/orgs/${ORG}/actions/runners/registration-token"
-    else
-      TOKEN_REGISTRATION_URL="https://github.schibsted.io/api/v3/repos/${ORG}/${REPO}/actions/runners/registration-token"
-    fi
-
-    RUNNER_TOKEN="$(sudo -u ubuntu curl -XPOST -fsSL \
-      -H "Accept: application/vnd.github.v3+json" \
-      -H "${AUTH_HEADER}" \
-      "${TOKEN_REGISTRATION_URL}" \
-      | jq -r '.token')"
+    TOKEN_REGISTRATION_URL="https://github.schibsted.io/api/v3/repos/${ORG}/${REPO}/actions/runners/registration-token"
   fi
+
+  RUNNER_TOKEN="$(sudo -u ubuntu curl -XPOST -fsSL \
+    -H "Accept: application/vnd.github.v3+json" \
+    -H "${AUTH_HEADER}" \
+    "${TOKEN_REGISTRATION_URL}" \
+    | jq -r '.token')"
 }
 
 configure() {
