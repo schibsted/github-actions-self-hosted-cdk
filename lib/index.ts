@@ -5,15 +5,12 @@ import {
   Port,
   SubnetType,
   InstanceInitiatedShutdownBehavior,
-  OperatingSystemType,
   InstanceType,
   UserData,
   MachineImage,
-  AmazonLinuxGeneration,
   MultipartUserData,
   MultipartBody,
   LaunchTemplate,
-  AmazonLinuxImage,
   SecurityGroup,
 } from 'aws-cdk-lib/aws-ec2';
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
@@ -34,6 +31,7 @@ import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { PolicyStatement, Policy } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import path from 'path';
+import { readFileSync } from 'fs';
 
 export interface GithubActionsRunnerParams extends StackProps {
   instanceType?: string;
@@ -180,29 +178,6 @@ export class GithubActionsRunnerStack extends Stack {
     const resource = api.root.addResource('webhook');
     resource.addMethod('POST', new LambdaIntegration(func));
 
-    //const bootHookConf = UserData.forLinux();
-    //bootHookConf.addCommands('cloud-init-per once docker_options echo \'OPTIONS="${OPTIONS} --storage-opt dm.basesize=40G"\' >> /etc/sysconfig/docker');
-    const setupCommands = UserData.forLinux();
-    setupCommands.addCommands('sudo yum install curl');
-    setupCommands.addCommands('sudo yum install jq');
-    const multipartUserData = new MultipartUserData();
-    //multipartUserData.addPart(MultipartBody.fromUserData(bootHookConf, 'text/cloud-boothook; charset="us-ascii"'));
-    multipartUserData.addPart(MultipartBody.fromUserData(setupCommands));
-
-    // const userDataScript = readFileSync('./lib/user-data.sh', 'utf8');
-    // // 👇 add the User Data script to the Instance
-    // ec2Instance.addUserData(userDataScript);
-    //multipartUserData.add
-
-    // const ec2Vpc = new Vpc(this, 'Ec2Vpc', {
-    //   cidr: '10.0.0.0/16',
-    //   natGateways: 0,
-    //   /*
-    //   subnetConfiguration: [
-    //     {name: 'public', cidrMask: 24, subnetType: SubnetType.PUBLIC},
-    //   ],*/
-    // });
-
     const defaultVpc = Vpc.fromLookup(this, 'DefaultVpc', {
       isDefault: true,
     });
@@ -212,25 +187,17 @@ export class GithubActionsRunnerStack extends Stack {
       securityGroupName: 'gh-default-sg',
     });
     defaultSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
-
-    // const securityGroup = new SecurityGroup(this, 'SecurityGroup', {
-    //   vpc,
-    //   allowAllOutbound: true,
-    // });
-    // securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
+    const userDataScript = readFileSync(
+      path.resolve(__dirname, '../script/runner.sh'),
+      'utf8',
+    );
     new LaunchTemplate(this, 'LaunchTemplate', {
       launchTemplateName: 'GithubActionsRunnerTemplate',
-      userData: multipartUserData,
+      userData: UserData.custom(userDataScript),
       instanceType: new InstanceType('t3.micro'),
-      // machineImage: MachineImage.genericLinux({
-      //   'eu-north-1': 'ami-092cce4a19b438926',
-      // }),
       machineImage: MachineImage.fromSsmParameter(
         '/aws/service/canonical/ubuntu/server/focal/stable/current/amd64/hvm/ebs-gp2/ami-id',
       ),
-      // machineImage: MachineImage.latestAmazonLinux({
-      //   generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
-      // }),
       instanceInitiatedShutdownBehavior:
         InstanceInitiatedShutdownBehavior.TERMINATE,
       securityGroup: defaultSecurityGroup,
