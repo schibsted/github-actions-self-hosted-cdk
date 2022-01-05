@@ -170,11 +170,24 @@ export class GithubActionsRunnerStack extends Stack {
             },
           }),
           new PolicyStatement({
+            actions: ['ec2:RunInstances', 'ec2:CreateTags'],
+            resources: ['*'],
+          }),
+          new PolicyStatement({
             actions: ['iam:PassRole'],
             resources: ['*'],
             conditions: {
               StringLike: {
                 'iam:PassedToService': 'ecs-tasks.amazonaws.com',
+              },
+            },
+          }),
+          new PolicyStatement({
+            actions: ['iam:PassRole'],
+            resources: ['*'],
+            conditions: {
+              StringLike: {
+                'iam:PassedToService': 'ec2.amazonaws.com',
               },
             },
           }),
