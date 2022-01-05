@@ -147,6 +147,48 @@ export class GithubActionsRunnerStack extends Stack {
       ],
     });
 
+    const defaultVpc = Vpc.fromLookup(this, 'DefaultVpc', {
+      isDefault: true,
+    });
+    const defaultSecurityGroup = new SecurityGroup(this, 'DefaultSG', {
+      vpc: defaultVpc,
+      allowAllOutbound: true,
+      securityGroupName: 'gh-default-sg',
+    });
+    defaultSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
+    const userDataScript = readFileSync(
+      path.resolve(__dirname, '../script/runner.sh'),
+      'utf8',
+    )
+      .replace('$AWS_REGION', props.env?.region ?? 'eu-north-1')
+      .replace('$GH_TOKEN_SSM_PATH', props.tokenSsmPath)
+      .replace('$RUNNER_CONTEXT', props.context)
+      .replace('$RUNNER_TIMEOUT', '60m');
+    const template = new LaunchTemplate(this, 'LaunchTemplate', {
+      launchTemplateName: 'GithubActionsRunnerTemplate',
+      userData: UserData.custom(userDataScript),
+      instanceType: new InstanceType('t3.micro'),
+      machineImage: MachineImage.fromSsmParameter(
+        '/aws/service/canonical/ubuntu/server/focal/stable/current/amd64/hvm/ebs-gp2/ami-id',
+      ),
+      instanceInitiatedShutdownBehavior:
+        InstanceInitiatedShutdownBehavior.TERMINATE,
+      securityGroup: defaultSecurityGroup,
+      role: new Role(this, 'RunnerRole', {
+        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+        inlinePolicies: {
+          'ssm-policy': new PolicyDocument({
+            statements: [
+              new PolicyStatement({
+                actions: ['ssm:*'],
+                resources: ['*'],
+              }),
+            ],
+          }),
+        },
+      }),
+    });
+
     const func = new Function(this, 'WebhookLambda', {
       runtime: Runtime.NODEJS_14_X,
       handler: 'index.handler',
@@ -155,6 +197,8 @@ export class GithubActionsRunnerStack extends Stack {
         cluster: cluster.clusterName,
         taskDefinition: taskDefinition.family,
         capacityProvider: capacityProvider.capacityProviderName,
+        templateId: template.launchTemplateId ?? '',
+        templateVersion: template.latestVersionNumber,
       },
     });
     func.role?.attachInlinePolicy(
@@ -198,46 +242,5 @@ export class GithubActionsRunnerStack extends Stack {
     const resource = api.root.addResource('webhook');
     resource.addMethod('POST', new LambdaIntegration(func));
 
-    const defaultVpc = Vpc.fromLookup(this, 'DefaultVpc', {
-      isDefault: true,
-    });
-    const defaultSecurityGroup = new SecurityGroup(this, 'DefaultSG', {
-      vpc: defaultVpc,
-      allowAllOutbound: true,
-      securityGroupName: 'gh-default-sg',
-    });
-    defaultSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
-    const userDataScript = readFileSync(
-      path.resolve(__dirname, '../script/runner.sh'),
-      'utf8',
-    )
-      .replace('$AWS_REGION', props.env?.region ?? 'eu-north-1')
-      .replace('$GH_TOKEN_SSM_PATH', props.tokenSsmPath)
-      .replace('$RUNNER_CONTEXT', props.context)
-      .replace('$RUNNER_TIMEOUT', '60m');
-    new LaunchTemplate(this, 'LaunchTemplate', {
-      launchTemplateName: 'GithubActionsRunnerTemplate',
-      userData: UserData.custom(userDataScript),
-      instanceType: new InstanceType('t3.micro'),
-      machineImage: MachineImage.fromSsmParameter(
-        '/aws/service/canonical/ubuntu/server/focal/stable/current/amd64/hvm/ebs-gp2/ami-id',
-      ),
-      instanceInitiatedShutdownBehavior:
-        InstanceInitiatedShutdownBehavior.TERMINATE,
-      securityGroup: defaultSecurityGroup,
-      role: new Role(this, 'RunnerRole', {
-        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
-        inlinePolicies: {
-          'ssm-policy': new PolicyDocument({
-            statements: [
-              new PolicyStatement({
-                actions: ['ssm:*'],
-                resources: ['*'],
-              }),
-            ],
-          }),
-        },
-      }),
-    });
   }
 }
