@@ -197,7 +197,11 @@ export class GithubActionsRunnerStack extends Stack {
     const userDataScript = readFileSync(
       path.resolve(__dirname, '../script/runner.sh'),
       'utf8',
-    );
+    )
+      .replace('$AWS_REGION', props.env?.region ?? 'eu-north-1')
+      .replace('$GH_TOKEN_SSM_PATH', props.tokenSsmPath)
+      .replace('$RUNNER_CONTEXT', props.context)
+      .replace('$RUNNER_TIMEOUT', '60m');
     new LaunchTemplate(this, 'LaunchTemplate', {
       launchTemplateName: 'GithubActionsRunnerTemplate',
       userData: UserData.custom(userDataScript),

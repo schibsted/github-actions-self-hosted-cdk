@@ -3,10 +3,11 @@
 sudo apt-get update -y
 sudo apt-get install -y curl jq awscli
 
-RUNNER_WORKDIR=${RUNNER_WORKDIR:-_work}
-RUNNER_TIMEOUT=${RUNNER_TIMEOUT:-60m}
-
-RUNNER_CONTEXT=spt-mediaplatform-labs
+AWS_REGION=$AWS_REGION
+GH_TOKEN_SSM_PATH=$GH_TOKEN_SSM_PATH
+RUNNER_CONTEXT=$RUNNER_CONTEXT
+RUNNER_TIMEOUT=$RUNNER_TIMEOUT
+RUNNER_WORKDIR=_work
 
 cd /home/ubuntu
 
@@ -24,7 +25,6 @@ deregister_runner() {
 }
 
 init() {
-
   GITHUB_TOKEN=$(aws ssm get-parameters --name /github/actions/token --region eu-north-1 --with-decryption | jq -r .Parameters[0].Value)
   AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
   ORG=$(cut -d/ -f1 <<< ${RUNNER_CONTEXT})
