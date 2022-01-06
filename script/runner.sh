@@ -11,13 +11,13 @@ RUNNER_WORKDIR=_work
 
 cd /home/ubuntu
 
-install() {
-  GITHUB_RUNNER_VERSION=${GITHUB_RUNNER_VERSION:-$(sudo -u ubuntu curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r .tag_name | sed 's/v//g')} \
-  && sudo -u ubuntu curl -sSLO https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz \
-  && sudo -u ubuntu tar -zxvf actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz \
-  && sudo -u ubuntu rm -f actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz \
-  && sudo ./bin/installdependencies.sh
-}
+# install() {
+#   GITHUB_RUNNER_VERSION=${GITHUB_RUNNER_VERSION:-$(sudo -u ubuntu curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r .tag_name | sed 's/v//g')} \
+#   && sudo -u ubuntu curl -sSLO https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz \
+#   && sudo -u ubuntu tar -zxvf actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz \
+#   && sudo -u ubuntu rm -f actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz \
+#   && sudo ./bin/installdependencies.sh
+# }
 
 deregister_runner() {
   echo "Exit signal caught, deregistering runner..."
@@ -58,8 +58,8 @@ run() {
   deregister_runner
 }
 
-echo "Installing..."
-install
+# echo "Installing..."
+# install
 
 echo "Init..."
 init

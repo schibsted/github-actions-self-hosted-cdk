@@ -8,8 +8,6 @@ import {
   InstanceType,
   UserData,
   MachineImage,
-  MultipartUserData,
-  MultipartBody,
   LaunchTemplate,
   SecurityGroup,
 } from 'aws-cdk-lib/aws-ec2';
@@ -33,9 +31,16 @@ import {
   Policy,
   Role,
   ServicePrincipal,
-  ManagedPolicy,
   PolicyDocument,
+  CfnInstanceProfile,
+  ManagedPolicy,
 } from 'aws-cdk-lib/aws-iam';
+import {
+  CfnImage,
+  CfnImageRecipe,
+  CfnInfrastructureConfiguration,
+  CfnComponent,
+} from 'aws-cdk-lib/aws-imagebuilder';
 import { Construct } from 'constructs';
 import path from 'path';
 import { readFileSync } from 'fs';
@@ -54,6 +59,8 @@ export interface GithubActionsRunnerParams extends StackProps {
 export class GithubActionsRunnerStack extends Stack {
   constructor(scope: Construct, id: string, props: GithubActionsRunnerParams) {
     super(scope, id, props);
+
+    const region = props.env?.region ?? 'eu-north-1';
 
     const vpc = new Vpc(this, 'Vpc', {
       maxAzs: 1,
@@ -147,6 +154,75 @@ export class GithubActionsRunnerStack extends Stack {
       ],
     });
 
+    const component = new CfnComponent(this, 'GithubActionsRunnerComponent', {
+      name: 'Install Runner',
+      version: '1.0.1',
+      platform: 'Linux',
+      data: readFileSync(
+        path.resolve(__dirname, '../script/component.yml'),
+        'utf8',
+      ),
+    });
+
+    const recipe = new CfnImageRecipe(this, 'Recipe', {
+      name: 'GithubActionsRunnerAmiRecipe',
+      version: '0.0.3',
+      parentImage: `arn:aws:imagebuilder:${region}:aws:image/ubuntu-server-20-lts-x86/x.x.x`,
+      components: [
+        {
+          componentArn: `arn:aws:imagebuilder:${region}:aws:component/update-linux/1.0.0`,
+        },
+        // {
+        //   componentArn: `arn:aws:imagebuilder:${region}:aws:component/aws-cli-version-2-linux/1.0.3`,
+        // },
+        {
+          componentArn: `arn:aws:imagebuilder:${region}:aws:component/docker-ce-ubuntu/1.0.0`,
+        },
+        {
+          componentArn: component.attrArn,
+          parameters: [
+            {
+              name: 'RunnerVersion',
+              value: ['2.286.0'],
+            },
+          ],
+        },
+      ],
+    });
+
+    const instanceProfile = new CfnInstanceProfile(this, 'AmiInstanceProfile', {
+      path: '/executionServiceEC2Role/',
+      instanceProfileName: 'GithubActionsRunnerInstanceProfile',
+      roles: [
+        new Role(this, 'InstanceProfileRole', {
+          assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+          managedPolicies: [
+            ManagedPolicy.fromAwsManagedPolicyName(
+              'AmazonSSMManagedInstanceCore',
+            ),
+            ManagedPolicy.fromAwsManagedPolicyName(
+              'EC2InstanceProfileForImageBuilder',
+            ),
+          ],
+        }).roleName,
+      ],
+    });
+
+    const infraConfig = new CfnInfrastructureConfiguration(
+      this,
+      'AmiInfraConfig',
+      {
+        name: 'GithubActionsRunnerAmiInfraConfig',
+        instanceProfileName: instanceProfile.instanceProfileName!,
+      },
+    );
+    infraConfig.addDependsOn(instanceProfile);
+
+    const ami = new CfnImage(this, 'Ami', {
+      imageRecipeArn: recipe.attrArn,
+      infrastructureConfigurationArn: infraConfig.attrArn,
+    });
+
     const defaultVpc = Vpc.fromLookup(this, 'DefaultVpc', {
       isDefault: true,
     });
@@ -160,7 +236,7 @@ export class GithubActionsRunnerStack extends Stack {
       path.resolve(__dirname, '../script/runner.sh'),
       'utf8',
     )
-      .replace('$AWS_REGION', props.env?.region ?? 'eu-north-1')
+      .replace('$AWS_REGION', region)
       .replace('$GH_TOKEN_SSM_PATH', props.tokenSsmPath)
       .replace('$RUNNER_CONTEXT', props.context)
       .replace('$RUNNER_TIMEOUT', '60m');
@@ -168,9 +244,12 @@ export class GithubActionsRunnerStack extends Stack {
       launchTemplateName: 'GithubActionsRunnerTemplate',
       userData: UserData.custom(userDataScript),
       instanceType: new InstanceType('t3.micro'),
-      machineImage: MachineImage.fromSsmParameter(
-        '/aws/service/canonical/ubuntu/server/focal/stable/current/amd64/hvm/ebs-gp2/ami-id',
-      ),
+      // machineImage: MachineImage.fromSsmParameter(
+      //   '/aws/service/canonical/ubuntu/server/focal/stable/current/amd64/hvm/ebs-gp2/ami-id',
+      // ),
+      machineImage: MachineImage.genericLinux({
+        [region]: ami.attrImageId,
+      }),
       instanceInitiatedShutdownBehavior:
         InstanceInitiatedShutdownBehavior.TERMINATE,
       securityGroup: defaultSecurityGroup,
@@ -241,6 +320,5 @@ export class GithubActionsRunnerStack extends Stack {
     const api = new RestApi(this, 'api');
     const resource = api.root.addResource('webhook');
     resource.addMethod('POST', new LambdaIntegration(func));
-
   }
 }

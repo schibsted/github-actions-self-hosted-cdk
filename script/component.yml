@@ -1,0 +1,26 @@
+name: InstallRunner
+description: Install Github Actions runner
+schemaVersion: 1.0
+parameters:
+  - RunnerVersion:
+      type: string
+      default: '2.286.0'
+      description: Github Actions Runner version
+phases:
+  - name: build
+    steps:
+      - name: InstallRunner
+        action: ExecuteBash
+        inputs:
+          commands:
+            - echo "Creating file.."
+            - touch /home/ubuntu/myFile.txt
+            - echo "Adding contents.."
+            - echo "I am contents." > /home/ubuntu/myFile.txt
+            - sudo apt-get update -y
+            - sudo apt-get install -y curl jq awscli
+            - cd /home/ubuntu
+            - sudo -u ubuntu curl -sSLO https://github.com/actions/runner/releases/download/v{{ RunnerVersion }}/actions-runner-linux-x64-{{ RunnerVersion }}.tar.gz
+            - sudo -u ubuntu tar -zxvf actions-runner-linux-x64-{{ RunnerVersion }}.tar.gz
+            - sudo -u ubuntu rm -f actions-runner-linux-x64-{{ RunnerVersion }}.tar.gz
+            - sudo ./bin/installdependencies.sh
