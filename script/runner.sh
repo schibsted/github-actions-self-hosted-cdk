@@ -1,6 +1,7 @@
 #!/bin/bash
 
 AWS_REGION=$AWS_REGION
+AWS_INSTANCE_TYPE=$(curl http://169.254.169.254/latest/meta-data/instance-type)
 GH_TOKEN_SSM_PATH=$GH_TOKEN_SSM_PATH
 RUNNER_CONTEXT=$RUNNER_CONTEXT
 RUNNER_TIMEOUT=$RUNNER_TIMEOUT
@@ -35,7 +36,7 @@ init() {
 configure() {
   sudo -u ubuntu ./config.sh --url "https://github.schibsted.io/${RUNNER_CONTEXT}" \
     --token "${RUNNER_TOKEN}" \
-    --labels "yes-this-is-dog" \
+    --labels "vm,instance-type:${AWS_INSTANCE_TYPE}" \
     --work "${RUNNER_WORKDIR}" \
     --unattended \
     --ephemeral

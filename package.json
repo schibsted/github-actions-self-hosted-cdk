@@ -9,7 +9,7 @@
     "build": "tsc",
     "lint": "eslint . --ext ts",
     "lint:fix": "eslint . --fix --ext ts",
-    "prettier": "prettier --write '{*/**/*,*}.{ts,md,json}'",
+    "prettier": "prettier --write '{*/**/*,*}.{ts,js,md,json}'",
     "cdk": "cdk"
   },
   "lint-staged": {

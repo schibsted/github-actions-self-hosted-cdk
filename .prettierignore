@@ -1,2 +1,6 @@
 build
 package-lock.json
+cdk.out
+cdk.json
+cdk.context.json
+node_modules
