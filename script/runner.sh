@@ -36,7 +36,7 @@ init() {
 configure() {
   sudo -u ubuntu ./config.sh --url "https://github.schibsted.io/${RUNNER_CONTEXT}" \
     --token "${RUNNER_TOKEN}" \
-    --labels "vm,instance-type:${AWS_INSTANCE_TYPE}" \
+    --labels "vm:${AWS_INSTANCE_TYPE}" \
     --work "${RUNNER_WORKDIR}" \
     --unattended \
     --ephemeral
