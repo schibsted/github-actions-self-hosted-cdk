@@ -156,7 +156,7 @@ export class GithubActionsRunnerStack extends Stack {
 
     const component = new CfnComponent(this, 'GithubActionsRunnerComponent', {
       name: 'Install Runner',
-      version: '1.0.1',
+      version: '1.0.2',
       platform: 'Linux',
       data: readFileSync(
         path.resolve(__dirname, '../script/component.yml'),
@@ -166,15 +166,12 @@ export class GithubActionsRunnerStack extends Stack {
 
     const recipe = new CfnImageRecipe(this, 'Recipe', {
       name: 'GithubActionsRunnerAmiRecipe',
-      version: '0.0.3',
+      version: '0.0.4',
       parentImage: `arn:aws:imagebuilder:${region}:aws:image/ubuntu-server-20-lts-x86/x.x.x`,
       components: [
         {
           componentArn: `arn:aws:imagebuilder:${region}:aws:component/update-linux/1.0.0`,
         },
-        // {
-        //   componentArn: `arn:aws:imagebuilder:${region}:aws:component/aws-cli-version-2-linux/1.0.3`,
-        // },
         {
           componentArn: `arn:aws:imagebuilder:${region}:aws:component/docker-ce-ubuntu/1.0.0`,
         },

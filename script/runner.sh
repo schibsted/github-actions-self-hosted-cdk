@@ -1,8 +1,5 @@
 #!/bin/bash
 
-sudo apt-get update -y
-sudo apt-get install -y curl jq awscli
-
 AWS_REGION=$AWS_REGION
 GH_TOKEN_SSM_PATH=$GH_TOKEN_SSM_PATH
 RUNNER_CONTEXT=$RUNNER_CONTEXT
@@ -11,21 +8,13 @@ RUNNER_WORKDIR=_work
 
 cd /home/ubuntu
 
-# install() {
-#   GITHUB_RUNNER_VERSION=${GITHUB_RUNNER_VERSION:-$(sudo -u ubuntu curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r .tag_name | sed 's/v//g')} \
-#   && sudo -u ubuntu curl -sSLO https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz \
-#   && sudo -u ubuntu tar -zxvf actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz \
-#   && sudo -u ubuntu rm -f actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz \
-#   && sudo ./bin/installdependencies.sh
-# }
-
 deregister_runner() {
   echo "Exit signal caught, deregistering runner..."
   sudo -u ubuntu ./config.sh remove --unattended --token "${RUNNER_TOKEN}"
 }
 
 init() {
-  GITHUB_TOKEN=$(aws ssm get-parameters --name /github/actions/token --region eu-north-1 --with-decryption | jq -r .Parameters[0].Value)
+  GITHUB_TOKEN=$(aws ssm get-parameters --name ${GH_TOKEN_SSM_PATH} --region ${AWS_REGION} --with-decryption | jq -r .Parameters[0].Value)
   AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
   ORG=$(cut -d/ -f1 <<< ${RUNNER_CONTEXT})
   REPO=$(cut -d/ -f2 <<< ${RUNNER_CONTEXT})
@@ -57,9 +46,6 @@ run() {
   sudo -u ubuntu timeout --signal=15 "${RUNNER_TIMEOUT}" ./run.sh & wait $! && return
   deregister_runner
 }
-
-# echo "Installing..."
-# install
 
 echo "Init..."
 init

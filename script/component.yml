@@ -13,10 +13,6 @@ phases:
         action: ExecuteBash
         inputs:
           commands:
-            - echo "Creating file.."
-            - touch /home/ubuntu/myFile.txt
-            - echo "Adding contents.."
-            - echo "I am contents." > /home/ubuntu/myFile.txt
             - sudo apt-get update -y
             - sudo apt-get install -y curl jq awscli
             - cd /home/ubuntu
