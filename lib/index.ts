@@ -241,9 +241,6 @@ export class GithubActionsRunnerStack extends Stack {
       launchTemplateName: 'GithubActionsRunnerTemplate',
       userData: UserData.custom(userDataScript),
       instanceType: new InstanceType('t3.micro'),
-      // machineImage: MachineImage.fromSsmParameter(
-      //   '/aws/service/canonical/ubuntu/server/focal/stable/current/amd64/hvm/ebs-gp2/ami-id',
-      // ),
       machineImage: MachineImage.genericLinux({
         [region]: ami.attrImageId,
       }),
