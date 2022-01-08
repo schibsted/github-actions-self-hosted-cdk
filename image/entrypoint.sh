@@ -9,10 +9,7 @@ deregister_runner() {
   exit
 }
 
-if [[ -z "${GITHUB_TOKEN}" || -z "${RUNNER_CONTEXT}" ]]; then
-  echo 'One of the mandatory parameters is missing. Quitting...'
-  exit 1
-else
+init() {
   AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
   ORG=$(cut -d/ -f1 <<< ${RUNNER_CONTEXT})
   REPO=$(cut -d/ -f2 <<< ${RUNNER_CONTEXT})
@@ -28,17 +25,28 @@ else
     -H "${AUTH_HEADER}" \
     "${TOKEN_REGISTRATION_URL}" \
     | jq -r '.token')"
-fi
+}
+
+configure() {
+  ./config.sh --url "https://github.schibsted.io/${RUNNER_CONTEXT}" \
+    --token "${RUNNER_TOKEN}" \
+    --labels "container:${MEMORY}" \
+    --work "${RUNNER_WORKDIR}" \
+    --unattended \
+    --ephemeral
+}
+
+run() {
+  trap deregister_runner SIGINT SIGQUIT SIGTERM INT QUIT TERM
+  timeout --signal=15 "${RUNNER_TIMEOUT}" ./run.sh & wait $! && exit
+  deregister_runner
+}
+
+echo "Init..."
+init
 
 echo "Configuring..."
-./config.sh --url "https://github.schibsted.io/${RUNNER_CONTEXT}" \
-  --token "${RUNNER_TOKEN}" \
-  --labels "yes-this-is-dog" \
-  --work "${RUNNER_WORKDIR}" \
-  --unattended \
-  --ephemeral
+configure
 
-trap deregister_runner SIGINT SIGQUIT SIGTERM INT QUIT TERM
-
-timeout --signal=15 "${RUNNER_TIMEOUT}" ./run.sh & wait $! && exit
-deregister_runner
+echo "Running..."
+run
