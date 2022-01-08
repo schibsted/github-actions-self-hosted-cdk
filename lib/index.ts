@@ -40,14 +40,14 @@ import { readFileSync } from 'fs';
 import path from 'path';
 
 export interface GithubActionsRunnerParams extends StackProps {
-  instanceType?: string;
-  minCapacity?: number;
-  maxCapacity?: number;
-  runnerMemory?: number;
   runnerTimeout?: string;
   context: string;
   tokenSsmPath: string;
-  enableEc2InstanceConnect?: boolean;
+  runnerVersion?: string;
+  vm: {
+    enableEc2InstanceConnect?: boolean;
+  };
+  container: {};
 }
 
 export class GithubActionsRunnerStack extends Stack {
@@ -55,6 +55,7 @@ export class GithubActionsRunnerStack extends Stack {
     super(scope, id, props);
 
     const region = props.env?.region ?? 'eu-north-1';
+    const runnerTimeout = props.runnerTimeout ?? '60m';
 
     const vpc = Vpc.fromLookup(this, 'Vpc', {
       isDefault: true,
@@ -139,7 +140,7 @@ export class GithubActionsRunnerStack extends Stack {
       .replace('$AWS_REGION', region)
       .replace('$GH_TOKEN_SSM_PATH', props.tokenSsmPath)
       .replace('$RUNNER_CONTEXT', props.context)
-      .replace('$RUNNER_TIMEOUT', '60m');
+      .replace('$RUNNER_TIMEOUT', runnerTimeout);
     const template = new LaunchTemplate(this, 'LaunchTemplate', {
       launchTemplateName: 'GithubActionsRunnerTemplate',
       userData: UserData.custom(userDataScript),
@@ -178,7 +179,7 @@ export class GithubActionsRunnerStack extends Stack {
       logging: LogDrivers.awsLogs({ streamPrefix: 'GitHubActionsRunner' }),
       environment: {
         RUNNER_CONTEXT: props.context,
-        RUNNER_TIMEOUT: props.runnerTimeout ?? '60m',
+        RUNNER_TIMEOUT: runnerTimeout,
       },
       secrets: {
         GITHUB_TOKEN: Secret.fromSsmParameter(
