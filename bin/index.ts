@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import { App } from 'aws-cdk-lib';
-import { GithubActionsRunnerStack } from '../lib';
+import { GithubActionsRunnerStack } from '../src';
 
 const app = new App();
 new GithubActionsRunnerStack(app, 'GithubActionsRunnerStack', {
