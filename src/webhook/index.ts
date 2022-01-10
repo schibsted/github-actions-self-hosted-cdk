@@ -15,7 +15,7 @@ export const setupWekhook = (stack: Stack, env: WebhookEnvironment) => {
     },
   });
   func.role?.attachInlinePolicy(
-    new Policy(stack, 'RunTaskPolicy', {
+    new Policy(stack, 'LaunchGithubActionsRunner', {
       statements: [
         new PolicyStatement({
           actions: ['ecs:RunTask'],

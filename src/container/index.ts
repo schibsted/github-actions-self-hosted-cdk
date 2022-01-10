@@ -17,10 +17,10 @@ export const setupContainerRunners = (
   props: GithubActionsRunnersProps,
   vpc: IVpc,
 ) => {
-  const cluster = new Cluster(stack, 'GitHubActionsRunnerCluster', {
+  const cluster = new Cluster(stack, 'GithubActionsRunners', {
     vpc,
     enableFargateCapacityProviders: true,
-    clusterName: 'GitHubActionsRunnerCluster',
+    clusterName: 'GithubActionsRunners',
   });
 
   const taskDefinition = new FargateTaskDefinition(stack, 'TaskDef', {});
@@ -28,7 +28,7 @@ export const setupContainerRunners = (
     containerName: 'Runner',
     image: ContainerImage.fromAsset(path.resolve(__dirname, '.')),
     logging: LogDrivers.awsLogs({
-      streamPrefix: 'GitHubActionsRunner',
+      streamPrefix: 'GithubActionsRunners',
       logRetention: RetentionDays.TWO_WEEKS,
     }),
     environment: {
@@ -39,7 +39,7 @@ export const setupContainerRunners = (
       GITHUB_TOKEN: Secret.fromSsmParameter(
         StringParameter.fromSecureStringParameterAttributes(
           stack,
-          'GitHubAccessToken',
+          'GithubAccessToken',
           {
             parameterName: props.tokenSsmPath,
             version: 0,
