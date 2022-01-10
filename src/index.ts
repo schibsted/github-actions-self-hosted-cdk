@@ -16,7 +16,7 @@ export class GithubActionsRunners extends Stack {
     const securityGroup = new SecurityGroup(this, 'SecurityGroup', {
       vpc,
       allowAllOutbound: true,
-      securityGroupName: 'gh-actions-runner-sg',
+      securityGroupName: 'github-actions-runners',
     });
     if (props.vm?.enableEc2InstanceConnect) {
       securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
