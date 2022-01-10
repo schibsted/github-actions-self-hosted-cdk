@@ -8,6 +8,7 @@ import {
   Secret,
 } from 'aws-cdk-lib/aws-ecs';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import path from 'path';
 import { GithubActionsRunnerParams } from '../types';
 
@@ -26,7 +27,10 @@ export const setupContainerRunners = (
   taskDefinition.addContainer('Container', {
     containerName: 'Runner',
     image: ContainerImage.fromAsset(path.resolve(__dirname, '.')),
-    logging: LogDrivers.awsLogs({ streamPrefix: 'GitHubActionsRunner' }),
+    logging: LogDrivers.awsLogs({
+      streamPrefix: 'GitHubActionsRunner',
+      logRetention: RetentionDays.TWO_WEEKS,
+    }),
     environment: {
       RUNNER_CONTEXT: props.context,
       RUNNER_TIMEOUT: props.runnerTimeout ?? '60m',
