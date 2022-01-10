@@ -23,11 +23,11 @@ import {
 } from 'aws-cdk-lib/aws-imagebuilder';
 import { readFileSync } from 'fs';
 import path from 'path';
-import { GithubActionsRunnerParams } from '../types';
+import { GithubActionsRunnersProps } from '../types';
 
 export const setupVMRunners = (
   stack: Stack,
-  props: GithubActionsRunnerParams,
+  props: GithubActionsRunnersProps,
   securityGroup: ISecurityGroup,
 ) => {
   const region = props.env?.region ?? 'eu-north-1';

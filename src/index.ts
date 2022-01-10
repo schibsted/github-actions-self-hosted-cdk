@@ -1,13 +1,13 @@
 import { Stack } from 'aws-cdk-lib';
 import { Vpc, Peer, Port, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
-import { GithubActionsRunnerParams } from './types';
+import { GithubActionsRunnersProps } from './types';
 import { setupVMRunners } from './vm';
 import { setupContainerRunners } from './container';
 import { setupWekhook } from './webhook';
 
 export class GithubActionsRunners extends Stack {
-  constructor(scope: Construct, id: string, props: GithubActionsRunnerParams) {
+  constructor(scope: Construct, id: string, props: GithubActionsRunnersProps) {
     super(scope, id, props);
 
     const vpc = Vpc.fromLookup(this, 'Vpc', {

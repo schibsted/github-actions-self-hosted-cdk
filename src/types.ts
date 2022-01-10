@@ -10,7 +10,7 @@ export interface WebhookEnvironment {
   securityGroup: string;
 }
 
-export interface GithubActionsRunnerParams extends StackProps {
+export interface GithubActionsRunnersProps extends StackProps {
   runnerTimeout?: string;
   context: string;
   tokenSsmPath: string;

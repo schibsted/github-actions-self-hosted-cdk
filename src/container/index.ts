@@ -10,11 +10,11 @@ import {
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import path from 'path';
-import { GithubActionsRunnerParams } from '../types';
+import { GithubActionsRunnersProps } from '../types';
 
 export const setupContainerRunners = (
   stack: Stack,
-  props: GithubActionsRunnerParams,
+  props: GithubActionsRunnersProps,
   vpc: IVpc,
 ) => {
   const cluster = new Cluster(stack, 'GitHubActionsRunnerCluster', {
