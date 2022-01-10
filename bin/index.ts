@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import { App } from 'aws-cdk-lib';
-import { GithubActionsRunnerStack } from '../src';
+import { GithubActionsRunners } from '../src';
 
 const app = new App();
-new GithubActionsRunnerStack(app, 'GithubActionsRunnerStack', {
+new GithubActionsRunners(app, 'GithubActionsRunnerStack', {
   env: {
     account: '466464767973',
     region: 'eu-north-1',
+  },
+  vm: {
+    enableEc2InstanceConnect: true,
   },
   context: 'spt-mediaplatform-labs',
   tokenSsmPath: '/github/actions/token',

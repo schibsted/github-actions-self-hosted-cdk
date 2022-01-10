@@ -6,7 +6,7 @@ import { setupVMRunners } from './vm';
 import { setupContainerRunners } from './container';
 import { setupWekhook } from './webhook';
 
-export class GithubActionsRunnerStack extends Stack {
+export class GithubActionsRunners extends Stack {
   constructor(scope: Construct, id: string, props: GithubActionsRunnerParams) {
     super(scope, id, props);
 
@@ -18,7 +18,9 @@ export class GithubActionsRunnerStack extends Stack {
       allowAllOutbound: true,
       securityGroupName: 'gh-actions-runner-sg',
     });
-    securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
+    if (props.vm?.enableEc2InstanceConnect) {
+      securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
+    }
 
     const vm = setupVMRunners(this, props, securityGroup);
     const container = setupContainerRunners(this, props, vpc);
