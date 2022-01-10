@@ -1,0 +1,923 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot test 1`] = `
+Object {
+  "Outputs": Object {
+    "apiEndpoint9349E63C": Object {
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "apiC8550315",
+            },
+            ".execute-api.eu-north-1.",
+            Object {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            Object {
+              "Ref": "apiDeploymentStageprod896C8101",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+  },
+  "Parameters": Object {
+    "BootstrapVersion": Object {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": Object {
+    "Ami": Object {
+      "Properties": Object {
+        "ImageRecipeArn": Object {
+          "Fn::GetAtt": Array [
+            "Recipe",
+            "Arn",
+          ],
+        },
+        "InfrastructureConfigurationArn": Object {
+          "Fn::GetAtt": Array [
+            "AmiInfraConfig",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ImageBuilder::Image",
+    },
+    "AmiInfraConfig": Object {
+      "DependsOn": Array [
+        "AmiInstanceProfile",
+      ],
+      "Properties": Object {
+        "InstanceProfileName": "GithubActionsRunnerInstanceProfile",
+        "Name": "GithubActionsRunnerAmiInfraConfig",
+      },
+      "Type": "AWS::ImageBuilder::InfrastructureConfiguration",
+    },
+    "AmiInstanceProfile": Object {
+      "Properties": Object {
+        "InstanceProfileName": "GithubActionsRunnerInstanceProfile",
+        "Path": "/executionServiceEC2Role/",
+        "Roles": Array [
+          Object {
+            "Ref": "InstanceProfileRole5BFF5D1E",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::InstanceProfile",
+    },
+    "GitHubActionsRunnerCluster23B95B13": Object {
+      "Properties": Object {
+        "CapacityProviders": Array [
+          "FARGATE",
+          "FARGATE_SPOT",
+        ],
+        "Cluster": Object {
+          "Ref": "GitHubActionsRunnerCluster5CD8DD12",
+        },
+        "DefaultCapacityProviderStrategy": Array [],
+      },
+      "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
+    },
+    "GitHubActionsRunnerCluster5CD8DD12": Object {
+      "Properties": Object {
+        "ClusterName": "GitHubActionsRunnerCluster",
+      },
+      "Type": "AWS::ECS::Cluster",
+    },
+    "GithubActionsRunnerComponent": Object {
+      "Properties": Object {
+        "Data": "name: InstallRunner
+description: Install Github Actions runner
+schemaVersion: 1.0
+parameters:
+  - RunnerVersion:
+      type: string
+      default: '2.286.0'
+      description: Github Actions Runner version
+phases:
+  - name: build
+    steps:
+      - name: InstallRunner
+        action: ExecuteBash
+        inputs:
+          commands:
+            - sudo apt-get update -y
+            - sudo apt-get install -y curl jq awscli
+            - cd /home/ubuntu
+            - sudo -u ubuntu curl -sSLO https://github.com/actions/runner/releases/download/v{{ RunnerVersion }}/actions-runner-linux-x64-{{ RunnerVersion }}.tar.gz
+            - sudo -u ubuntu tar -zxvf actions-runner-linux-x64-{{ RunnerVersion }}.tar.gz
+            - sudo -u ubuntu rm -f actions-runner-linux-x64-{{ RunnerVersion }}.tar.gz
+            - sudo ./bin/installdependencies.sh",
+        "Name": "Install Runner",
+        "Platform": "Linux",
+        "Version": "1.0.2",
+      },
+      "Type": "AWS::ImageBuilder::Component",
+    },
+    "InstanceProfileRole5BFF5D1E": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "ec2.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AmazonSSMManagedInstanceCore",
+              ],
+            ],
+          },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/EC2InstanceProfileForImageBuilder",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "LaunchTemplate04EC5460": Object {
+      "Properties": Object {
+        "LaunchTemplateData": Object {
+          "IamInstanceProfile": Object {
+            "Arn": Object {
+              "Fn::GetAtt": Array [
+                "LaunchTemplateProfile94AA77CE",
+                "Arn",
+              ],
+            },
+          },
+          "ImageId": Object {
+            "Fn::GetAtt": Array [
+              "Ami",
+              "ImageId",
+            ],
+          },
+          "InstanceInitiatedShutdownBehavior": "terminate",
+          "InstanceType": "t3.micro",
+          "SecurityGroupIds": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "SecurityGroupDD263621",
+                "GroupId",
+              ],
+            },
+          ],
+          "TagSpecifications": Array [
+            Object {
+              "ResourceType": "instance",
+              "Tags": Array [
+                Object {
+                  "Key": "Name",
+                  "Value": "Default/TestStack/LaunchTemplate",
+                },
+              ],
+            },
+            Object {
+              "ResourceType": "volume",
+              "Tags": Array [
+                Object {
+                  "Key": "Name",
+                  "Value": "Default/TestStack/LaunchTemplate",
+                },
+              ],
+            },
+          ],
+          "UserData": Object {
+            "Fn::Base64": "#!/bin/bash
+
+AWS_REGION=eu-north-1
+AWS_INSTANCE_TYPE=$(curl http://169.254.169.254/latest/meta-data/instance-type)
+GH_TOKEN_SSM_PATH=/github/actions/token
+RUNNER_CONTEXT=spt-mediaplatform-labs
+RUNNER_TIMEOUT=60m
+RUNNER_WORKDIR=_work
+
+cd /home/ubuntu
+
+deregister_runner() {
+  echo \\"Exit signal caught, deregistering runner...\\"
+  sudo -u ubuntu ./config.sh remove --unattended --token \\"\${RUNNER_TOKEN}\\"
+}
+
+init() {
+  GITHUB_TOKEN=$(aws ssm get-parameters --name \${GH_TOKEN_SSM_PATH} --region \${AWS_REGION} --with-decryption | jq -r .Parameters[0].Value)
+  AUTH_HEADER=\\"Authorization: token \${GITHUB_TOKEN}\\"
+  ORG=$(cut -d/ -f1 <<< \${RUNNER_CONTEXT})
+  REPO=$(cut -d/ -f2 <<< \${RUNNER_CONTEXT})
+
+  if [[ -z \\"\${REPOSITORY}\\" ]]; then
+    TOKEN_REGISTRATION_URL=\\"https://github.schibsted.io/api/v3/orgs/\${ORG}/actions/runners/registration-token\\"
+  else
+    TOKEN_REGISTRATION_URL=\\"https://github.schibsted.io/api/v3/repos/\${ORG}/\${REPO}/actions/runners/registration-token\\"
+  fi
+
+  RUNNER_TOKEN=\\"$(sudo -u ubuntu curl -XPOST -fsSL \\\\
+    -H \\"Accept: application/vnd.github.v3+json\\" \\\\
+    -H \\"\${AUTH_HEADER}\\" \\\\
+    \\"\${TOKEN_REGISTRATION_URL}\\" \\\\
+    | jq -r '.token')\\"
+}
+
+configure() {
+  sudo -u ubuntu ./config.sh --url \\"https://github.schibsted.io/\${RUNNER_CONTEXT}\\" \\\\
+    --token \\"\${RUNNER_TOKEN}\\" \\\\
+    --labels \\"vm:\${AWS_INSTANCE_TYPE}\\" \\\\
+    --work \\"\${RUNNER_WORKDIR}\\" \\\\
+    --unattended \\\\
+    --ephemeral
+}
+
+run() {
+  trap deregister_runner SIGINT SIGQUIT SIGTERM INT QUIT TERM
+  sudo -u ubuntu timeout --signal=15 \\"\${RUNNER_TIMEOUT}\\" ./run.sh & wait $! && return
+  deregister_runner
+}
+
+echo \\"Init...\\"
+init
+
+echo \\"Configuring...\\"
+configure
+
+echo \\"Running...\\"
+run
+
+echo \\"Shutting down...\\"
+sudo shutdown -h now",
+          },
+        },
+        "LaunchTemplateName": "GithubActionsRunnerTemplate",
+      },
+      "Type": "AWS::EC2::LaunchTemplate",
+    },
+    "LaunchTemplateProfile94AA77CE": Object {
+      "Properties": Object {
+        "Roles": Array [
+          Object {
+            "Ref": "RunnerRoleBA0605C0",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::InstanceProfile",
+    },
+    "Recipe": Object {
+      "Properties": Object {
+        "Components": Array [
+          Object {
+            "ComponentArn": "arn:aws:imagebuilder:eu-north-1:aws:component/update-linux/1.0.0",
+          },
+          Object {
+            "ComponentArn": "arn:aws:imagebuilder:eu-north-1:aws:component/docker-ce-ubuntu/1.0.0",
+          },
+          Object {
+            "ComponentArn": Object {
+              "Fn::GetAtt": Array [
+                "GithubActionsRunnerComponent",
+                "Arn",
+              ],
+            },
+            "Parameters": Array [
+              Object {
+                "Name": "RunnerVersion",
+                "Value": Array [
+                  "2.286.0",
+                ],
+              },
+            ],
+          },
+        ],
+        "Name": "GithubActionsRunnerAmiRecipe",
+        "ParentImage": "arn:aws:imagebuilder:eu-north-1:aws:image/ubuntu-server-20-lts-x86/x.x.x",
+        "Version": "0.0.4",
+      },
+      "Type": "AWS::ImageBuilder::ImageRecipe",
+    },
+    "RunTaskPolicy14A54B01": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "ecs:RunTask",
+              "Condition": Object {
+                "ArnEquals": Object {
+                  "ecs:cluster": Object {
+                    "Fn::GetAtt": Array [
+                      "GitHubActionsRunnerCluster5CD8DD12",
+                      "Arn",
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "ec2:RunInstances",
+                "ec2:CreateTags",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "iam:PassRole",
+              "Condition": Object {
+                "StringLike": Object {
+                  "iam:PassedToService": "ecs-tasks.amazonaws.com",
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "iam:PassRole",
+              "Condition": Object {
+                "StringLike": Object {
+                  "iam:PassedToService": "ec2.amazonaws.com",
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "RunTaskPolicy14A54B01",
+        "Roles": Array [
+          Object {
+            "Ref": "WebhookLambdaServiceRoleDB3A5765",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "RunnerRoleBA0605C0": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "ec2.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": "ssm:*",
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "ssm-policy",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "SecurityGroupDD263621": Object {
+      "Properties": Object {
+        "GroupDescription": "Default/TestStack/SecurityGroup",
+        "GroupName": "gh-actions-runner-sg",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:22",
+            "FromPort": 22,
+            "IpProtocol": "tcp",
+            "ToPort": 22,
+          },
+        ],
+        "VpcId": "vpc-12345",
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "TaskDef54694570": Object {
+      "Properties": Object {
+        "ContainerDefinitions": Array [
+          Object {
+            "Environment": Array [
+              Object {
+                "Name": "RUNNER_CONTEXT",
+                "Value": "spt-mediaplatform-labs",
+              },
+              Object {
+                "Name": "RUNNER_TIMEOUT",
+                "Value": "60m",
+              },
+            ],
+            "Essential": true,
+            "Image": Object {
+              "Fn::Sub": "abc-123.dkr.ecr.eu-north-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-abc-123-eu-north-1:e40038a302f5bc00d6995858b996d23cd50edb0ba87edf5a8e09543b0b2d3e52",
+            },
+            "LogConfiguration": Object {
+              "LogDriver": "awslogs",
+              "Options": Object {
+                "awslogs-group": Object {
+                  "Ref": "TaskDefContainerLogGroupB60E6F44",
+                },
+                "awslogs-region": "eu-north-1",
+                "awslogs-stream-prefix": "GitHubActionsRunner",
+              },
+            },
+            "Name": "Runner",
+            "Secrets": Array [
+              Object {
+                "Name": "GITHUB_TOKEN",
+                "ValueFrom": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":ssm:eu-north-1:abc-123:parameter/github/actions/token",
+                    ],
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": Object {
+          "Fn::GetAtt": Array [
+            "TaskDefExecutionRoleB4775C97",
+            "Arn",
+          ],
+        },
+        "Family": "TestStackTaskDefA6238255",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": Array [
+          "FARGATE",
+        ],
+        "TaskRoleArn": Object {
+          "Fn::GetAtt": Array [
+            "TaskDefTaskRole1EDB4A67",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ECS::TaskDefinition",
+    },
+    "TaskDefContainerLogGroupB60E6F44": Object {
+      "DeletionPolicy": "Retain",
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "TaskDefExecutionRoleB4775C97": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "TaskDefExecutionRoleDefaultPolicy0DBB737A": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ecr:eu-north-1:abc-123:repository/cdk-hnb659fds-container-assets-abc-123-eu-north-1",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "TaskDefContainerLogGroupB60E6F44",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "ssm:DescribeParameters",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:GetParameterHistory",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ssm:eu-north-1:abc-123:parameter/github/actions/token",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "TaskDefExecutionRoleDefaultPolicy0DBB737A",
+        "Roles": Array [
+          Object {
+            "Ref": "TaskDefExecutionRoleB4775C97",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "TaskDefTaskRole1EDB4A67": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "WebhookLambda118EFE5D": Object {
+      "DependsOn": Array [
+        "WebhookLambdaServiceRoleDB3A5765",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": "cdk-hnb659fds-assets-abc-123-eu-north-1",
+          "S3Key": "d9b8e411cfd4b48bcf10472bb3e5782ee8cca3de1099db7ecd0a6a671739c57b.zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "clusterArn": Object {
+              "Fn::GetAtt": Array [
+                "GitHubActionsRunnerCluster5CD8DD12",
+                "Arn",
+              ],
+            },
+            "clusterName": Object {
+              "Ref": "GitHubActionsRunnerCluster5CD8DD12",
+            },
+            "securityGroup": Object {
+              "Fn::GetAtt": Array [
+                "SecurityGroupDD263621",
+                "GroupId",
+              ],
+            },
+            "subnets": "s-12345,s-67890",
+            "taskDefinition": "TestStackTaskDefA6238255",
+            "templateId": Object {
+              "Ref": "LaunchTemplate04EC5460",
+            },
+            "templateVersion": Object {
+              "Fn::GetAtt": Array [
+                "LaunchTemplate04EC5460",
+                "LatestVersionNumber",
+              ],
+            },
+          },
+        },
+        "Handler": "handler.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "WebhookLambdaServiceRoleDB3A5765",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "WebhookLambdaServiceRoleDB3A5765": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "apiAccount57E28B43": Object {
+      "DependsOn": Array [
+        "apiC8550315",
+      ],
+      "Properties": Object {
+        "CloudWatchRoleArn": Object {
+          "Fn::GetAtt": Array [
+            "apiCloudWatchRoleAC81D93E",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ApiGateway::Account",
+    },
+    "apiC8550315": Object {
+      "Properties": Object {
+        "Name": "api",
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "apiCloudWatchRoleAC81D93E": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "apiDeployment149F129491d0c069ff1ae77e5ca543966e2abdea": Object {
+      "DependsOn": Array [
+        "apiwebhookPOSTB12B11A0",
+        "apiwebhook7D40138A",
+      ],
+      "Properties": Object {
+        "Description": "Automatically created by the RestApi construct",
+        "RestApiId": Object {
+          "Ref": "apiC8550315",
+        },
+      },
+      "Type": "AWS::ApiGateway::Deployment",
+    },
+    "apiDeploymentStageprod896C8101": Object {
+      "Properties": Object {
+        "DeploymentId": Object {
+          "Ref": "apiDeployment149F129491d0c069ff1ae77e5ca543966e2abdea",
+        },
+        "RestApiId": Object {
+          "Ref": "apiC8550315",
+        },
+        "StageName": "prod",
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "apiwebhook7D40138A": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "apiC8550315",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "webhook",
+        "RestApiId": Object {
+          "Ref": "apiC8550315",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "apiwebhookPOSTApiPermissionTestStackapiF0E8311DPOSTwebhook95871F4F": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "WebhookLambda118EFE5D",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:eu-north-1:abc-123:",
+              Object {
+                "Ref": "apiC8550315",
+              },
+              "/",
+              Object {
+                "Ref": "apiDeploymentStageprod896C8101",
+              },
+              "/POST/webhook",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "apiwebhookPOSTApiPermissionTestTestStackapiF0E8311DPOSTwebhookB4A914DC": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "WebhookLambda118EFE5D",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:eu-north-1:abc-123:",
+              Object {
+                "Ref": "apiC8550315",
+              },
+              "/test-invoke-stage/POST/webhook",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "apiwebhookPOSTB12B11A0": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "POST",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "WebhookLambda118EFE5D",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "apiwebhook7D40138A",
+        },
+        "RestApiId": Object {
+          "Ref": "apiC8550315",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+  },
+  "Rules": Object {
+    "CheckBootstrapVersion": Object {
+      "Assertions": Array [
+        Object {
+          "Assert": Object {
+            "Fn::Not": Array [
+              Object {
+                "Fn::Contains": Array [
+                  Array [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  Object {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

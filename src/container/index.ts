@@ -9,7 +9,7 @@ import {
 } from 'aws-cdk-lib/aws-ecs';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import path from 'path';
-import { GithubActionsRunnerParams } from '../index';
+import { GithubActionsRunnerParams } from '../types';
 
 export const setupContainerRunners = (
   stack: Stack,

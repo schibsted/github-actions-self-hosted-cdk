@@ -23,7 +23,7 @@ import {
 } from 'aws-cdk-lib/aws-imagebuilder';
 import { readFileSync } from 'fs';
 import path from 'path';
-import { GithubActionsRunnerParams } from '../index';
+import { GithubActionsRunnerParams } from '../types';
 
 export const setupVMRunners = (
   stack: Stack,

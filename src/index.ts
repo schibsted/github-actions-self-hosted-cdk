@@ -1,29 +1,10 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib';
 import { Vpc, Peer, Port, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
+import { GithubActionsRunnerParams } from './types';
 import { setupVMRunners } from './vm';
 import { setupContainerRunners } from './container';
 import { setupWekhook } from './webhook';
-
-export interface GithubActionsRunnerParams extends StackProps {
-  runnerTimeout?: string;
-  context: string;
-  tokenSsmPath: string;
-  runnerVersion?: string;
-  vm?: {
-    enableEc2InstanceConnect?: boolean;
-  };
-}
-
-export interface WebhookEnvironment {
-  templateId: string;
-  templateVersion: string;
-  clusterName: string;
-  clusterArn: string;
-  taskDefinition: string;
-  subnets: string;
-  securityGroup: string;
-}
 
 export class GithubActionsRunnerStack extends Stack {
   constructor(scope: Construct, id: string, props: GithubActionsRunnerParams) {

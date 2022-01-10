@@ -12,10 +12,14 @@
   ],
   "scripts": {
     "build": "tsc",
+    "cdk": "cdk",
     "lint": "eslint . --ext ts",
     "lint:fix": "eslint . --fix --ext ts",
     "prettier": "prettier --write '{*/**/*,*}.{ts,js,md,json}'",
-    "cdk": "cdk"
+    "test": "npm run lint && npm run test:security && npm run typecheck && npm run test:unit",
+    "test:security": "npm audit --audit-level=high --registry=https://registry.npmjs.org",
+    "test:unit": "jest",
+    "typecheck": "tsc"
   },
   "lint-staged": {
     "*.{ts,md,json}": [
@@ -34,6 +38,7 @@
     "source-map-support": "^0.5.21"
   },
   "devDependencies": {
+    "@types/jest": "^27.4.0",
     "@types/node": "^16.11.17",
     "@typescript-eslint/eslint-plugin": "^5.8.0",
     "@typescript-eslint/parser": "^5.8.0",
@@ -47,10 +52,12 @@
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
+    "jest": "^27.4.7",
     "lint-staged": "^12.1.4",
     "prettier": "^2.5.1",
     "simple-git-hooks": "^2.7.0",
     "ts-node": "^10.4.0",
+    "ts-jest": "^27.1.2",
     "typescript": "^4.5.4"
   },
   "publishConfig": {

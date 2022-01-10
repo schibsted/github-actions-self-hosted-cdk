@@ -3,7 +3,7 @@ import { RestApi, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { PolicyStatement, Policy } from 'aws-cdk-lib/aws-iam';
 import path from 'path';
-import { WebhookEnvironment } from '../index';
+import { WebhookEnvironment } from '../types';
 
 export const setupWekhook = (stack: Stack, env: WebhookEnvironment) => {
   const func = new Function(stack, 'WebhookLambda', {
