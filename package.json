@@ -1,9 +1,9 @@
 {
-  "name": "@henric-englund/yes-this-is-dog",
+  "name": "@spp/github-actions-self-hosted",
   "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "https://github.schibsted.io/henric-englund/yes-this-dog.git"
+    "url": "https://github.schibsted.io/spp/github-actions-self-hosted.git"
   },
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
