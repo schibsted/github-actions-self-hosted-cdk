@@ -30,14 +30,14 @@ It has been designed to be:
 
 ### First things first
 
-1. Make sure your `~/.aws/credentials` is properly setup for all relevant AWS accounts
-2. Fire up your Docker engine
+1. Make sure your `~/.aws/credentials` is properly setup.
+2. Fire up your Docker engine.
 3. Install the CDK CLI, `npm install -g aws-cdk`
-4. Bootstrap your AWS account(s) for CDK by running by following the instructions in the [CDK Bootstrapping guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
+4. Bootstrap your AWS account for CDK by running by following the instructions in the [CDK Bootstrapping guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
 
 ### Define your infrastructure
 
 1. Create a CDK project using the `@spp/github-actions-self-hosted` construct
 2. `cdk deploy`
 3. Wait for it... Profit!
-4. Add webhook to GH
+4. The deploy command will output a webhook hostname. Configure your Github org/repo to send `Workflow jobs` events to that endpoint, e.g. `https://${hostname}/prod/webhook`
