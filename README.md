@@ -1,4 +1,4 @@
-## _Github Actions_ – self-hosted runners, made easy.
+## :rocket: _Github Actions_ – self-hosted runners, made easy.
 
 ###### _Cost optimized, fully managed, on AWS, powered by CDK._
 
@@ -71,4 +71,27 @@ new GithubActionsRunners(app, 'GithubActionsRunnerStack', {
   context: 'my-github-org',
   tokenSsmPath: '/github/actions/token',
 });
+```
+
+## :video_game: How to use self-hosted runners
+
+All jobs that are to run on a self-hosted runner (which is all jobs in a GHE environment), need to have `self-hosted` in the `runs-on` list. In addition, to specify which type of runner or runner configuration to launch the job on we also need to set either `container:XXX` or `vm:YYY`, where `XXX` is the amount of memory a container based runner should have and `YYY` is an AWS instance type.
+
+For example:
+
+#### `.github/workflows/my-workflow.yml`
+
+```yaml
+jobs:
+  build:
+    name: Build
+    runs-on:
+      - self-hosted
+      - vm:t3.micro
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on:
+      - self-hosted
+      - container:512
 ```
