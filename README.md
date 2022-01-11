@@ -41,3 +41,34 @@ It has been designed to be:
 2. `cdk deploy`
 3. Wait for it... Profit!
 4. The deploy command will output a webhook hostname. Configure your Github org/repo to send `Workflow jobs` events to that endpoint, e.g. `https://${hostname}/prod/webhook`
+
+## :ribbon: Example project
+
+##### `package.json`
+
+```json
+{
+  "dependencies": {
+    "@spp/github-actions-self-hosted": "^0.1.0",
+    "aws-cdk-lib": "^2.3.0"
+  }
+}
+```
+
+#### `index.ts`
+
+```js
+#!/usr/bin/env node
+import { App } from 'aws-cdk-lib';
+import { GithubActionsRunners } from '@spp/github-actions-self-hosted';
+
+const app = new App();
+new GithubActionsRunners(app, 'GithubActionsRunnerStack', {
+  env: {
+    account: '1234567890',
+    region: 'eu-north-1',
+  },
+  context: 'my-github-org',
+  tokenSsmPath: '/github/actions/token',
+});
+```
