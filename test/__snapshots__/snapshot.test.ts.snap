@@ -73,25 +73,6 @@ Object {
       },
       "Type": "AWS::IAM::InstanceProfile",
     },
-    "GitHubActionsRunnerCluster23B95B13": Object {
-      "Properties": Object {
-        "CapacityProviders": Array [
-          "FARGATE",
-          "FARGATE_SPOT",
-        ],
-        "Cluster": Object {
-          "Ref": "GitHubActionsRunnerCluster5CD8DD12",
-        },
-        "DefaultCapacityProviderStrategy": Array [],
-      },
-      "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
-    },
-    "GitHubActionsRunnerCluster5CD8DD12": Object {
-      "Properties": Object {
-        "ClusterName": "GitHubActionsRunnerCluster",
-      },
-      "Type": "AWS::ECS::Cluster",
-    },
     "GithubActionsRunnerComponent": Object {
       "Properties": Object {
         "Data": "name: InstallRunner
@@ -121,6 +102,25 @@ phases:
         "Version": "1.0.2",
       },
       "Type": "AWS::ImageBuilder::Component",
+    },
+    "GithubActionsRunners8951DFA0": Object {
+      "Properties": Object {
+        "ClusterName": "GithubActionsRunners",
+      },
+      "Type": "AWS::ECS::Cluster",
+    },
+    "GithubActionsRunnersF4705E92": Object {
+      "Properties": Object {
+        "CapacityProviders": Array [
+          "FARGATE",
+          "FARGATE_SPOT",
+        ],
+        "Cluster": Object {
+          "Ref": "GithubActionsRunners8951DFA0",
+        },
+        "DefaultCapacityProviderStrategy": Array [],
+      },
+      "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
     },
     "InstanceProfileRole5BFF5D1E": Object {
       "Properties": Object {
@@ -164,6 +164,65 @@ phases:
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "LaunchGithubActionsRunner65ABA738": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "ecs:RunTask",
+              "Condition": Object {
+                "ArnEquals": Object {
+                  "ecs:cluster": Object {
+                    "Fn::GetAtt": Array [
+                      "GithubActionsRunners8951DFA0",
+                      "Arn",
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "ec2:RunInstances",
+                "ec2:CreateTags",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "iam:PassRole",
+              "Condition": Object {
+                "StringLike": Object {
+                  "iam:PassedToService": "ecs-tasks.amazonaws.com",
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "iam:PassRole",
+              "Condition": Object {
+                "StringLike": Object {
+                  "iam:PassedToService": "ec2.amazonaws.com",
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "LaunchGithubActionsRunner65ABA738",
+        "Roles": Array [
+          Object {
+            "Ref": "WebhookLambdaServiceRoleDB3A5765",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "LaunchTemplate04EC5460": Object {
       "Properties": Object {
@@ -322,65 +381,6 @@ sudo shutdown -h now",
       },
       "Type": "AWS::ImageBuilder::ImageRecipe",
     },
-    "RunTaskPolicy14A54B01": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "ecs:RunTask",
-              "Condition": Object {
-                "ArnEquals": Object {
-                  "ecs:cluster": Object {
-                    "Fn::GetAtt": Array [
-                      "GitHubActionsRunnerCluster5CD8DD12",
-                      "Arn",
-                    ],
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
-              "Action": Array [
-                "ec2:RunInstances",
-                "ec2:CreateTags",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
-              "Action": "iam:PassRole",
-              "Condition": Object {
-                "StringLike": Object {
-                  "iam:PassedToService": "ecs-tasks.amazonaws.com",
-                },
-              },
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
-              "Action": "iam:PassRole",
-              "Condition": Object {
-                "StringLike": Object {
-                  "iam:PassedToService": "ec2.amazonaws.com",
-                },
-              },
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "RunTaskPolicy14A54B01",
-        "Roles": Array [
-          Object {
-            "Ref": "WebhookLambdaServiceRoleDB3A5765",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "RunnerRoleBA0605C0": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -416,7 +416,7 @@ sudo shutdown -h now",
     "SecurityGroupDD263621": Object {
       "Properties": Object {
         "GroupDescription": "Default/TestStack/SecurityGroup",
-        "GroupName": "gh-actions-runner-sg",
+        "GroupName": "github-actions-runners",
         "SecurityGroupEgress": Array [
           Object {
             "CidrIp": "0.0.0.0/0",
@@ -462,7 +462,7 @@ sudo shutdown -h now",
                   "Ref": "TaskDefContainerLogGroupB60E6F44",
                 },
                 "awslogs-region": "eu-north-1",
-                "awslogs-stream-prefix": "GitHubActionsRunner",
+                "awslogs-stream-prefix": "GithubActionsRunners",
               },
             },
             "Name": "Runner",
@@ -509,6 +509,9 @@ sudo shutdown -h now",
     },
     "TaskDefContainerLogGroupB60E6F44": Object {
       "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "RetentionInDays": 14,
+      },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
@@ -628,18 +631,18 @@ sudo shutdown -h now",
       "Properties": Object {
         "Code": Object {
           "S3Bucket": "cdk-hnb659fds-assets-abc-123-eu-north-1",
-          "S3Key": "d9b8e411cfd4b48bcf10472bb3e5782ee8cca3de1099db7ecd0a6a671739c57b.zip",
+          "S3Key": "432fe0754cf983b98e3fb8fb2b69b9756f0186a3f37d1f42c1ebd306c8df3126.zip",
         },
         "Environment": Object {
           "Variables": Object {
             "clusterArn": Object {
               "Fn::GetAtt": Array [
-                "GitHubActionsRunnerCluster5CD8DD12",
+                "GithubActionsRunners8951DFA0",
                 "Arn",
               ],
             },
             "clusterName": Object {
-              "Ref": "GitHubActionsRunnerCluster5CD8DD12",
+              "Ref": "GithubActionsRunners8951DFA0",
             },
             "securityGroup": Object {
               "Fn::GetAtt": Array [
@@ -767,6 +770,9 @@ sudo shutdown -h now",
       "Type": "AWS::ApiGateway::Deployment",
     },
     "apiDeploymentStageprod896C8101": Object {
+      "DependsOn": Array [
+        "apiAccount57E28B43",
+      ],
       "Properties": Object {
         "DeploymentId": Object {
           "Ref": "apiDeployment149F129491d0c069ff1ae77e5ca543966e2abdea",
