@@ -8,6 +8,7 @@ export interface WebhookEnvironment {
   taskDefinition: string;
   subnets: string;
   securityGroup: string;
+  context: string;
 }
 
 export interface GithubActionsRunnersProps extends StackProps {

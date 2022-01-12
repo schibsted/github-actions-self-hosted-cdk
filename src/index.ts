@@ -29,6 +29,7 @@ export class GithubActionsRunners extends Stack {
       ...container,
       securityGroup: securityGroup.securityGroupId,
       subnets: vpc.publicSubnets.map(x => x.subnetId).join(','),
+      context: props.context,
     });
   }
 }

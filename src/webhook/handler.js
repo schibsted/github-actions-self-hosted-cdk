@@ -41,11 +41,17 @@ const containerCpuMapping = {
   8192: 4096,
 };
 
+const supportedRepo = repo => repo.includes(process.env.context);
+
 const handler = async event => {
   try {
     const data = JSON.parse(event.body);
     console.log('Data', data);
-    if (data.workflow_job && data.action === 'queued') {
+    if (
+      data.workflow_job &&
+      data.action === 'queued' &&
+      supportedRepo(data.repository.full_name)
+    ) {
       const vm = data.workflow_job.labels.find(x => x.match(/vm:.*/));
       const container = data.workflow_job.labels.find(x =>
         x.match(/container:.*/),
