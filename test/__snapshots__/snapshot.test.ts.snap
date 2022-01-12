@@ -103,25 +103,6 @@ phases:
       },
       "Type": "AWS::ImageBuilder::Component",
     },
-    "GithubActionsRunners8951DFA0": Object {
-      "Properties": Object {
-        "ClusterName": "GithubActionsRunners",
-      },
-      "Type": "AWS::ECS::Cluster",
-    },
-    "GithubActionsRunnersF4705E92": Object {
-      "Properties": Object {
-        "CapacityProviders": Array [
-          "FARGATE",
-          "FARGATE_SPOT",
-        ],
-        "Cluster": Object {
-          "Ref": "GithubActionsRunners8951DFA0",
-        },
-        "DefaultCapacityProviderStrategy": Array [],
-      },
-      "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
-    },
     "InstanceProfileRole5BFF5D1E": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -170,35 +151,10 @@ phases:
         "PolicyDocument": Object {
           "Statement": Array [
             Object {
-              "Action": "ecs:RunTask",
-              "Condition": Object {
-                "ArnEquals": Object {
-                  "ecs:cluster": Object {
-                    "Fn::GetAtt": Array [
-                      "GithubActionsRunners8951DFA0",
-                      "Arn",
-                    ],
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
               "Action": Array [
                 "ec2:RunInstances",
                 "ec2:CreateTags",
               ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
-              "Action": "iam:PassRole",
-              "Condition": Object {
-                "StringLike": Object {
-                  "iam:PassedToService": "ecs-tasks.amazonaws.com",
-                },
-              },
               "Effect": "Allow",
               "Resource": "*",
             },
@@ -279,6 +235,8 @@ AWS_INSTANCE_TYPE=$(curl http://169.254.169.254/latest/meta-data/instance-type)
 GH_TOKEN_SSM_PATH=/github/actions/token
 RUNNER_CONTEXT=spt-mediaplatform-labs
 RUNNER_TIMEOUT=60m
+RUNNER_GROUP=default
+
 RUNNER_WORKDIR=_work
 
 cd /home/ubuntu
@@ -312,6 +270,7 @@ configure() {
     --token \\"\${RUNNER_TOKEN}\\" \\\\
     --labels \\"vm:\${AWS_INSTANCE_TYPE}\\" \\\\
     --work \\"\${RUNNER_WORKDIR}\\" \\\\
+    --runnergroup \\"\${RUNNER_GROUP}\\" \\\\
     --unattended \\\\
     --ephemeral
 }
@@ -437,193 +396,6 @@ sudo shutdown -h now",
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "TaskDef54694570": Object {
-      "Properties": Object {
-        "ContainerDefinitions": Array [
-          Object {
-            "Environment": Array [
-              Object {
-                "Name": "RUNNER_CONTEXT",
-                "Value": "spt-mediaplatform-labs",
-              },
-              Object {
-                "Name": "RUNNER_TIMEOUT",
-                "Value": "60m",
-              },
-            ],
-            "Essential": true,
-            "Image": Object {
-              "Fn::Sub": "abc-123.dkr.ecr.eu-north-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-abc-123-eu-north-1:e40038a302f5bc00d6995858b996d23cd50edb0ba87edf5a8e09543b0b2d3e52",
-            },
-            "LogConfiguration": Object {
-              "LogDriver": "awslogs",
-              "Options": Object {
-                "awslogs-group": Object {
-                  "Ref": "TaskDefContainerLogGroupB60E6F44",
-                },
-                "awslogs-region": "eu-north-1",
-                "awslogs-stream-prefix": "GithubActionsRunners",
-              },
-            },
-            "Name": "Runner",
-            "Secrets": Array [
-              Object {
-                "Name": "GITHUB_TOKEN",
-                "ValueFrom": Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":ssm:eu-north-1:abc-123:parameter/github/actions/token",
-                    ],
-                  ],
-                },
-              },
-            ],
-          },
-        ],
-        "Cpu": "256",
-        "ExecutionRoleArn": Object {
-          "Fn::GetAtt": Array [
-            "TaskDefExecutionRoleB4775C97",
-            "Arn",
-          ],
-        },
-        "Family": "TestStackTaskDefA6238255",
-        "Memory": "512",
-        "NetworkMode": "awsvpc",
-        "RequiresCompatibilities": Array [
-          "FARGATE",
-        ],
-        "TaskRoleArn": Object {
-          "Fn::GetAtt": Array [
-            "TaskDefTaskRole1EDB4A67",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "AWS::ECS::TaskDefinition",
-    },
-    "TaskDefContainerLogGroupB60E6F44": Object {
-      "DeletionPolicy": "Retain",
-      "Properties": Object {
-        "RetentionInDays": 14,
-      },
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-    },
-    "TaskDefExecutionRoleB4775C97": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "ecs-tasks.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "TaskDefExecutionRoleDefaultPolicy0DBB737A": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":ecr:eu-north-1:abc-123:repository/cdk-hnb659fds-container-assets-abc-123-eu-north-1",
-                  ],
-                ],
-              },
-            },
-            Object {
-              "Action": "ecr:GetAuthorizationToken",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
-              "Action": Array [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "TaskDefContainerLogGroupB60E6F44",
-                  "Arn",
-                ],
-              },
-            },
-            Object {
-              "Action": Array [
-                "ssm:DescribeParameters",
-                "ssm:GetParameters",
-                "ssm:GetParameter",
-                "ssm:GetParameterHistory",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":ssm:eu-north-1:abc-123:parameter/github/actions/token",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "TaskDefExecutionRoleDefaultPolicy0DBB737A",
-        "Roles": Array [
-          Object {
-            "Ref": "TaskDefExecutionRoleB4775C97",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "TaskDefTaskRole1EDB4A67": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "ecs-tasks.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::IAM::Role",
-    },
     "WebhookLambda118EFE5D": Object {
       "DependsOn": Array [
         "WebhookLambdaServiceRoleDB3A5765",
@@ -631,27 +403,11 @@ sudo shutdown -h now",
       "Properties": Object {
         "Code": Object {
           "S3Bucket": "cdk-hnb659fds-assets-abc-123-eu-north-1",
-          "S3Key": "432fe0754cf983b98e3fb8fb2b69b9756f0186a3f37d1f42c1ebd306c8df3126.zip",
+          "S3Key": "b4495ced0aa18646ab37f42d23c98fd045de74b3bcc8e8e764a7579d5f4fc9f5.zip",
         },
         "Environment": Object {
           "Variables": Object {
-            "clusterArn": Object {
-              "Fn::GetAtt": Array [
-                "GithubActionsRunners8951DFA0",
-                "Arn",
-              ],
-            },
-            "clusterName": Object {
-              "Ref": "GithubActionsRunners8951DFA0",
-            },
-            "securityGroup": Object {
-              "Fn::GetAtt": Array [
-                "SecurityGroupDD263621",
-                "GroupId",
-              ],
-            },
-            "subnets": "s-12345,s-67890",
-            "taskDefinition": "TestStackTaskDefA6238255",
+            "context": "spt-mediaplatform-labs",
             "templateId": Object {
               "Ref": "LaunchTemplate04EC5460",
             },

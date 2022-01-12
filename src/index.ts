@@ -3,7 +3,6 @@ import { Vpc, Peer, Port, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { GithubActionsRunnersProps } from './types';
 import { setupVMRunners } from './vm';
-import { setupContainerRunners } from './container';
 import { setupWekhook } from './webhook';
 
 export class GithubActionsRunners extends Stack {
@@ -23,12 +22,8 @@ export class GithubActionsRunners extends Stack {
     }
 
     const vm = setupVMRunners(this, props, securityGroup);
-    const container = setupContainerRunners(this, props, vpc);
     setupWekhook(this, {
       ...vm,
-      ...container,
-      securityGroup: securityGroup.securityGroupId,
-      subnets: vpc.publicSubnets.map(x => x.subnetId).join(','),
       context: props.context,
     });
   }

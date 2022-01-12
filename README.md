@@ -16,11 +16,9 @@ It has been designed to be:
 
 - Runners are spun up on-demand when a new job Github Actions job is queued.
 - Runners are tore down and underlying instance/container is terminated when the job has been completed.
-- There's support for both container (ECS Fargate) and virtual machine (EC2) based runners.
-  - VM runners are typically required if a job need access to a Docker daemon.
-- It's possible to use any (x86) instance type for VM runners.
-- Container based runners can be configured to have 512, 1024, 2048, 3072, 4096, 5120, 6144, 7168 or 8192 MB of memory.
-- Runner type, instance type and memory requirements are configurable per job.
+- Runners are fired up on ephemeral EC2 instances with a Docker daemon running to support Docker builds.
+- All (x86) instance type are supported.
+- Instance type are configurable per job, making it possible to optimize the underlying instance per workload.
 
 ## :art: Solution architecture
 
@@ -31,9 +29,8 @@ It has been designed to be:
 ### First things first
 
 1. Make sure your `~/.aws/credentials` is properly setup.
-2. Fire up your Docker engine.
-3. Install the CDK CLI, `npm install -g aws-cdk`
-4. Bootstrap your AWS account for CDK by running by following the instructions in the [CDK Bootstrapping guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
+2. Install the CDK CLI, `npm install -g aws-cdk`
+3. Bootstrap your AWS account for CDK by running by following the instructions in the [CDK Bootstrapping guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
 
 ### Define your infrastructure
 
@@ -75,7 +72,7 @@ new GithubActionsRunners(app, 'GithubActionsRunnerStack', {
 
 ## :video_game: How to use self-hosted runners
 
-All jobs that are to run on a self-hosted runner (which is all jobs in a GHE environment), need to have `self-hosted` in the `runs-on` list. In addition, to specify which type of runner or runner configuration to launch the job on we also need to set either `container:XXX` or `vm:YYY`, where `XXX` is the amount of memory a container based runner should have and `YYY` is an AWS instance type.
+All jobs that are to run on a self-hosted runner (which is all jobs in a GHE environment), need to have `self-hosted` in the `runs-on` list. In addition, to specify which instance type to use we also need to set `vm:XXX`, where `XXX` is an AWS instance type.
 
 For example:
 
@@ -87,11 +84,11 @@ jobs:
     name: Build
     runs-on:
       - self-hosted
-      - vm:t3.micro
+      - vm:m5.medium
   deploy:
     name: Deploy
     needs: build
     runs-on:
       - self-hosted
-      - container:512
+      - vm:t3.micro
 ```
