@@ -40,7 +40,7 @@ configure() {
     --token "${RUNNER_TOKEN}" \
     --labels "vm:${AWS_INSTANCE_TYPE}" \
     --work "${RUNNER_WORKDIR}" \
-    --runnergroup "${RUNNER_GROUP}"
+    --runnergroup "${RUNNER_GROUP}" \
     --unattended \
     --ephemeral
 }
