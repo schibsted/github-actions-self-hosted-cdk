@@ -60,13 +60,24 @@ import { App } from 'aws-cdk-lib';
 import { GithubActionsRunners } from '@spp/github-actions-self-hosted';
 
 const app = new App();
-new GithubActionsRunners(app, 'GithubActionsRunnerStack', {
+new GithubActionsRunners(app, 'MyRunners', {
+  // AWS account and region
   env: {
     account: '1234567890',
     region: 'eu-north-1',
   },
+  // This can be either the name of a GH org or org/repo combination (e.g. my-org/my-repo)
   context: 'my-github-org',
+  // A path in AWS Parameter Store where a Github token is securely stored
   tokenSsmPath: '/github/actions/token',
+  // A path in AWS Parameter Store where a Github webhook secret is securly stored
+  webhookSecretSsmPath: '/github/webhook/secret',
+  // Optional: Set private to true to launch runners in a private subnet which communicates with the Internet through a NAT Gateway. Set to false to launch runners in a public subnet. Default: false
+  private: true,
+  // Optional: Specify which Github Actions runner version to use. Default: 2.286.0
+  runnerVersion: '252.1.0',
+  // Optional: Launch runners into the specified runner group. Default: use the default group
+  runnerGroup: 'labs',
 });
 ```
 
