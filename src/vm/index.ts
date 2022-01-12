@@ -33,14 +33,14 @@ export const setupVMRunners = (
   const region = props.env?.region!;
 
   const component = new CfnComponent(stack, 'GithubActionsRunnerComponent', {
-    name: 'Install Runner',
+    name: stack.artifactId,
     version: '1.0.2',
     platform: 'Linux',
     data: readFileSync(path.resolve(__dirname, './component.yml'), 'utf8'),
   });
 
   const recipe = new CfnImageRecipe(stack, 'Recipe', {
-    name: 'GithubActionsRunnerAmiRecipe',
+    name: stack.artifactId,
     version: '0.0.4',
     parentImage: `arn:aws:imagebuilder:${region}:aws:image/ubuntu-server-20-lts-x86/x.x.x`,
     components: [
@@ -64,7 +64,7 @@ export const setupVMRunners = (
 
   const instanceProfile = new CfnInstanceProfile(stack, 'AmiInstanceProfile', {
     path: '/executionServiceEC2Role/',
-    instanceProfileName: 'GithubActionsRunnerInstanceProfile',
+    instanceProfileName: stack.artifactId,
     roles: [
       new Role(stack, 'InstanceProfileRole', {
         assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
@@ -84,7 +84,7 @@ export const setupVMRunners = (
     stack,
     'AmiInfraConfig',
     {
-      name: 'GithubActionsRunnerAmiInfraConfig',
+      name: stack.artifactId,
       instanceProfileName: instanceProfile.instanceProfileName!,
     },
   );
@@ -105,7 +105,7 @@ export const setupVMRunners = (
     .replace('$RUNNER_GROUP', props.runnerGroup ?? 'default')
     .replace('$RUNNER_TIMEOUT', props.runnerTimeout ?? '60m');
   const template = new LaunchTemplate(stack, 'LaunchTemplate', {
-    launchTemplateName: 'GithubActionsRunnerTemplate',
+    launchTemplateName: stack.artifactId,
     userData: UserData.custom(userDataScript),
     instanceType: new InstanceType('t3.micro'),
     machineImage: MachineImage.genericLinux({

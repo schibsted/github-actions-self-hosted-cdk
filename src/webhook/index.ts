@@ -46,7 +46,7 @@ export const setupWekhook = (stack: Stack, env: WebhookEnvironment) => {
       ],
     }),
   );
-  const api = new RestApi(stack, 'api');
+  const api = new RestApi(stack, `${stack.artifactId}/WebhookApiGateway`);
   const resource = api.root.addResource('webhook');
   resource.addMethod('POST', new LambdaIntegration(func));
 };
