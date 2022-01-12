@@ -12,6 +12,16 @@ const ec2Params = {
   },
   SubnetId: process.env.subnetId,
 };
+
+if (process.env.spot === 'true') {
+  ec2Params.InstanceMarketOptions = {
+    MarketType: 'spot',
+    SpotOptions: {
+      SpotInstanceType: 'one-time',
+    },
+  };
+}
+
 const ssm = new AWS.SSM();
 const ssmParams = {
   Names: [process.env.webhookSecretSsmPath],

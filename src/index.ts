@@ -55,6 +55,7 @@ export class GithubActionsRunners extends Stack {
       ...vm,
       subnetId,
       context: props.context,
+      spot: (props.spot ?? true).toString(),
       webhookSecretSsmPath: props.webhookSecretSsmPath,
       webhookSecretSsmArn: `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter${props.webhookSecretSsmPath}`,
     });

@@ -5,6 +5,7 @@ export interface WebhookEnvironment {
   templateVersion: string;
   context: string;
   subnetId: string;
+  spot: string;
   webhookSecretSsmPath: string;
   webhookSecretSsmArn: string;
 }
@@ -20,4 +21,5 @@ export interface GithubActionsRunnersProps extends StackProps {
     enableEc2InstanceConnect?: boolean;
   };
   private?: boolean;
+  spot?: boolean;
 }

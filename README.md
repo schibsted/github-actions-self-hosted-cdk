@@ -18,6 +18,7 @@ It has been designed to be:
 - Runners are tore down and underlying instance is terminated when the job has been completed.
 - Runners are fired up on ephemeral EC2 instances with a Docker daemon running to support Docker builds.
 - All (x86) instance type are supported.
+- Spot instances are used by default.
 - Instance type are configurable per job, making it possible to optimize the underlying instance per workload.
 
 ## :art: Solution architecture
@@ -74,6 +75,8 @@ new GithubActionsRunners(app, 'MyRunners', {
   webhookSecretSsmPath: '/github/webhook/secret',
   // Optional: Set private to true to launch runners in a private subnet which communicates with the Internet through a NAT Gateway. Set to false to launch runners in a public subnet. Default: false
   private: true,
+  // Optional: Launch runners on spot instances. Default: true
+  spot: true,
   // Optional: Specify which Github Actions runner version to use. Default: 2.286.0
   runnerVersion: '252.1.0',
   // Optional: Launch runners into the specified runner group. Default: use the default group
