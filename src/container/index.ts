@@ -42,7 +42,6 @@ export const setupContainerRunners = (
           'GithubAccessToken',
           {
             parameterName: props.tokenSsmPath,
-            version: 0,
           },
         ),
       ),
