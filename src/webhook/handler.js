@@ -10,6 +10,7 @@ const ec2Params = {
     LaunchTemplateId: process.env.templateId,
     Version: process.env.templateVersion,
   },
+  SubnetId: process.env.subnetId,
 };
 const ssm = new AWS.SSM();
 const ssmParams = {
@@ -22,7 +23,7 @@ const verifySignature = async event => {
   const sig = Buffer.from(event.headers['X-Hub-Signature-256'], 'utf8');
   const hmac = crypto.createHmac('sha256', ssmResult.Parameters[0].Value);
   const digest = Buffer.from(
-    `sha256=${  hmac.update(event.body).digest('hex')}`,
+    `sha256=${hmac.update(event.body).digest('hex')}`,
     'utf8',
   );
   return sig.length === digest.length && crypto.timingSafeEqual(digest, sig);
