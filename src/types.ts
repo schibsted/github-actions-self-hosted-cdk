@@ -15,6 +15,7 @@ export interface GithubActionsRunnersProps extends StackProps {
   context: string;
   tokenSsmPath: string;
   runnerVersion?: string;
+  runnerGroup?: string;
   vm?: {
     enableEc2InstanceConnect?: boolean;
   };

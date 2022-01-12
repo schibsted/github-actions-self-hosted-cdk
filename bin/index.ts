@@ -12,6 +12,7 @@ new GithubActionsRunners(app, 'GithubActionsRunnerStack', {
   vm: {
     enableEc2InstanceConnect: true,
   },
+  runnerGroup: 'labs',
   context: 'spt-mediaplatform-labs',
   tokenSsmPath: '/github/actions/token',
 });

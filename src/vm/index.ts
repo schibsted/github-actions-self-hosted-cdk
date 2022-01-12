@@ -102,6 +102,7 @@ export const setupVMRunners = (
     .replace('$AWS_REGION', region)
     .replace('$GH_TOKEN_SSM_PATH', props.tokenSsmPath)
     .replace('$RUNNER_CONTEXT', props.context)
+    .replace('$RUNNER_GROUP', props.runnerGroup ?? 'default')
     .replace('$RUNNER_TIMEOUT', props.runnerTimeout ?? '60m');
   const template = new LaunchTemplate(stack, 'LaunchTemplate', {
     launchTemplateName: 'GithubActionsRunnerTemplate',

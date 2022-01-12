@@ -5,6 +5,8 @@ AWS_INSTANCE_TYPE=$(curl http://169.254.169.254/latest/meta-data/instance-type)
 GH_TOKEN_SSM_PATH=$GH_TOKEN_SSM_PATH
 RUNNER_CONTEXT=$RUNNER_CONTEXT
 RUNNER_TIMEOUT=$RUNNER_TIMEOUT
+RUNNER_GROUP=$RUNNER_GROUP
+
 RUNNER_WORKDIR=_work
 
 cd /home/ubuntu
@@ -38,6 +40,7 @@ configure() {
     --token "${RUNNER_TOKEN}" \
     --labels "vm:${AWS_INSTANCE_TYPE}" \
     --work "${RUNNER_WORKDIR}" \
+    --runnergroup "${RUNNER_GROUP}"
     --unattended \
     --ephemeral
 }

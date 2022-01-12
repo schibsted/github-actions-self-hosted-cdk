@@ -2,6 +2,7 @@
 
 RUNNER_WORKDIR=${RUNNER_WORKDIR:-_work}
 RUNNER_TIMEOUT=${RUNNER_TIMEOUT:-60m}
+RUNNER_GROUP=${RUNNER_GROUP:default}
 
 deregister_runner() {
   echo "Exit signal caught, deregistering runner..."
@@ -32,6 +33,7 @@ configure() {
     --token "${RUNNER_TOKEN}" \
     --labels "container:${MEMORY}" \
     --work "${RUNNER_WORKDIR}" \
+    --runnergroup "${RUNNER_GROUP}" \
     --unattended \
     --ephemeral
 }

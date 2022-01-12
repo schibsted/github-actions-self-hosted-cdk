@@ -34,6 +34,7 @@ export const setupContainerRunners = (
     environment: {
       RUNNER_CONTEXT: props.context,
       RUNNER_TIMEOUT: props.runnerTimeout ?? '60m',
+      RUNNER_GROUP: props.runnerGroup ?? 'default',
     },
     secrets: {
       GITHUB_TOKEN: Secret.fromSsmParameter(
