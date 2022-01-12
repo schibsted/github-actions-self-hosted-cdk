@@ -15,7 +15,7 @@ It has been designed to be:
 ## :tophat: Features
 
 - Runners are spun up on-demand when a new job Github Actions job is queued.
-- Runners are tore down and underlying instance/container is terminated when the job has been completed.
+- Runners are tore down and underlying instance is terminated when the job has been completed.
 - Runners are fired up on ephemeral EC2 instances with a Docker daemon running to support Docker builds.
 - All (x86) instance type are supported.
 - Instance type are configurable per job, making it possible to optimize the underlying instance per workload.
