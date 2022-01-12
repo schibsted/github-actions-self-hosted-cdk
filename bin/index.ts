@@ -15,4 +15,5 @@ new GithubActionsRunners(app, 'GithubActionsRunnerStack', {
   runnerGroup: 'labs',
   context: 'spt-mediaplatform-labs',
   tokenSsmPath: '/github/actions/token',
+  webhookSecretSsmPath: '/github/webhook/secret',
 });

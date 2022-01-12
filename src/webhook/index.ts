@@ -30,6 +30,19 @@ export const setupWekhook = (stack: Stack, env: WebhookEnvironment) => {
             },
           },
         }),
+        new PolicyStatement({
+          actions: ['ssm:getParameters'],
+          resources: [env.webhookSecretSsmArn],
+        }),
+        new PolicyStatement({
+          actions: ['iam:PassRole'],
+          resources: ['*'],
+          conditions: {
+            StringLike: {
+              'iam:PassedToService': 'ssm.amazonaws.com',
+            },
+          },
+        }),
       ],
     }),
   );

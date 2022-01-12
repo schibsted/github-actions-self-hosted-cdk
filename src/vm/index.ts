@@ -30,7 +30,7 @@ export const setupVMRunners = (
   props: GithubActionsRunnersProps,
   securityGroup: ISecurityGroup,
 ) => {
-  const region = props.env?.region ?? 'eu-north-1';
+  const region = props.env?.region!;
 
   const component = new CfnComponent(stack, 'GithubActionsRunnerComponent', {
     name: 'Install Runner',
