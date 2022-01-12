@@ -18,26 +18,8 @@ export const setupWekhook = (stack: Stack, env: WebhookEnvironment) => {
     new Policy(stack, 'LaunchGithubActionsRunner', {
       statements: [
         new PolicyStatement({
-          actions: ['ecs:RunTask'],
-          resources: ['*'],
-          conditions: {
-            ArnEquals: {
-              'ecs:cluster': env.clusterArn,
-            },
-          },
-        }),
-        new PolicyStatement({
           actions: ['ec2:RunInstances', 'ec2:CreateTags'],
           resources: ['*'],
-        }),
-        new PolicyStatement({
-          actions: ['iam:PassRole'],
-          resources: ['*'],
-          conditions: {
-            StringLike: {
-              'iam:PassedToService': 'ecs-tasks.amazonaws.com',
-            },
-          },
         }),
         new PolicyStatement({
           actions: ['iam:PassRole'],
