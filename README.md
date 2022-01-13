@@ -2,7 +2,7 @@
 
 ###### _Cost optimized, fully managed, on AWS, powered by CDK._
 
-This is [self-hosted _Github Actions_](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners) runners packaged as a [CDK construct](https://aws.amazon.com/cdk/) for easy reuse.
+This is [self-hosted _Github Actions_](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners) runners packaged as a [CDK construct](https://aws.amazon.com/cdk/), for easy reuse.
 
 It has been designed to be:
 
@@ -15,11 +15,11 @@ It has been designed to be:
 ## :tophat: Features
 
 - Runners are spun up on-demand when a new job Github Actions job is queued.
-- Runners are tore down and underlying instance is terminated when the job has been completed.
-- Runners are fired up on ephemeral EC2 instances with a Docker daemon running to support Docker builds.
-- All (x86) instance type are supported.
+- Runners are torn down and the underlying instance is terminated when the job has been completed.
+- Runners are fired upon ephemeral EC2 instances with a Docker daemon running to support Docker builds.
+- All (x86) instance types are supported.
 - Spot instances are used by default.
-- Instance type are configurable per job, making it possible to optimize the underlying instance per workload.
+- Instance types are configurable per job, making it possible to optimize the underlying instance per workload.
 
 ## :art: Solution architecture
 
