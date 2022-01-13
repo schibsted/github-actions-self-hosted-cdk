@@ -41,8 +41,9 @@ It has been designed to be:
 3. Wait for it... Profit! _(it'll take quite some time on the first deploy)_.
 4. The deploy command will output a webhook endpoint, called `NameOfStack.WebhookEndpoint`.
 5. Configure a hook in your Github org or repo to send `Workflow jobs` events to that endpoint.
-    * `https://github.schibsted.io/organizations/my-org/settings/hooks`
-    * Set a secret for the webhook and save that in AWS Parameter Store, for example in path `/github/webhhok/secret`.
+   - `https://github.schibsted.io/organizations/my-org/settings/hooks`
+   - Content type: `application/json`.
+   - Set a secret for the webhook and save that in AWS Parameter Store, for example in path `/github/webhhok/secret`.
 6. Create Github Personal Access Token with `workflow` and `admin:org` scopes. Save that token in AWS Parameter Store, for example in `/github/actions/token`.
 
 ## :ribbon: Example project
