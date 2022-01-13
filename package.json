@@ -1,7 +1,7 @@
 {
   "name": "@spp/github-actions-self-hosted",
   "description": "Self-hosted Github Actions runners, CDK powered, on AWS 🚀",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "repository": {
     "type": "git",
     "url": "https://github.schibsted.io/spp/github-actions-self-hosted.git"
@@ -12,7 +12,7 @@
     "build"
   ],
   "scripts": {
-    "build": "tsc && cp src/vm/*.{sh,yml} build/vm && cp src/webhook/handler.js build/webhook",
+    "build": "tsc && cp src/vm/component.yml build/vm && cp src/vm/entrypoint.sh build/vm && cp src/webhook/handler.js build/webhook",
     "cdk": "cdk",
     "lint": "eslint . --ext ts",
     "lint:fix": "eslint . --fix --ext ts",
