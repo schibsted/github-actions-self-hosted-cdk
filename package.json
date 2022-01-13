@@ -1,7 +1,7 @@
 {
   "name": "@spp/github-actions-self-hosted",
   "description": "Self-hosted Github Actions runners, CDK powered, on AWS 🚀",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.schibsted.io/spp/github-actions-self-hosted.git"
