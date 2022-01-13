@@ -1,4 +1,5 @@
 .*
+!.github
 build
 node_modules
 cdk.out
