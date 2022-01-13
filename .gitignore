@@ -1,6 +1,9 @@
 .*
 !.github
+bin
 build
 node_modules
 cdk.out
+cdk.json
+cdk.content.json
 *.tgz
