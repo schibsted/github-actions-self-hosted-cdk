@@ -16,10 +16,11 @@ It has been designed to be:
 
 - Runners are spun up on-demand when a new job Github Actions job is queued.
 - Runners are torn down and the underlying instance is terminated when the job has been completed.
-- Runners are fired upon ephemeral EC2 instances with a Docker daemon running to support Docker builds.
-- All (x86) instance types are supported.
+- Runners are launched on ephemeral EC2 instances with a Docker daemon running to support Docker builds.
+- All instance types are supported.
 - Spot instances are used by default.
 - Instance types are configurable per job, making it possible to optimize the underlying instance per workload.
+- ~~Both x86 and ARM based instances are supported.~~ (Soon)
 
 ## :art: Solution architecture
 
@@ -27,18 +28,24 @@ It has been designed to be:
 
 ## :traffic_light: Getting started
 
-### First things first
+### First things first _(aka getting ready for CDK)_
 
 1. Make sure your `~/.aws/credentials` is properly setup.
-2. Install the CDK CLI, `npm install -g aws-cdk`
-3. Bootstrap your AWS account for CDK by running by following the instructions in the [CDK Bootstrapping guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
+2. Install the CDK CLI, `npm install -g aws-cdk`.
+3. Bootstrap your AWS account for CDK by running by following the instructions in the [CDK Bootstrapping guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html).
 
-### Define your infrastructure
+### Ship it!
 
-1. Create a CDK project using the `@spp/github-actions-self-hosted` construct
+1. Create a CDK project using the `@spp/github-actions-self-hosted` construct (example below).
 2. `cdk deploy`
-3. Wait for it... Profit!
-4. The deploy command will output a webhook hostname. Configure your Github org/repo to send `Workflow jobs` events to that endpoint, e.g. `https://${hostname}/prod/webhook`
+3. Wait for it... Profit! _(it'll take quite some time on the first deploy)_.
+4. The deploy command will output a webhook endpoint, called `NameOfStack.WebhookEndpoint`.
+5. Configure a hook in your Github org or repo to send `Workflow jobs` events to that endpoint.
+
+- `https://github.schibsted.io/organizations/my-org/settings/hooks`
+- Set a secret for the webhook and save that in AWS Parameter Store, for example in path `/github/webhhok/secret`.
+
+6. Create Github Personal Access Token with `workflow` and `admin:org` scopes. Save that token in AWS Parameter Store, for example in `/github/actions/token`.
 
 ## :ribbon: Example project
 
