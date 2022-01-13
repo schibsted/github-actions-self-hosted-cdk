@@ -12,7 +12,7 @@
     "build"
   ],
   "scripts": {
-    "build": "tsc && cp src/vm/component.yml build/vm && cp src/webhook/handler.js build/webhook",
+    "build": "tsc && cp src/vm/*.{sh,yml} build/vm && cp src/webhook/handler.js build/webhook",
     "cdk": "cdk",
     "lint": "eslint . --ext ts",
     "lint:fix": "eslint . --fix --ext ts",
