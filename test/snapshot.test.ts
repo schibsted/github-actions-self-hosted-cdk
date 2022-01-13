@@ -13,6 +13,8 @@ test('Snapshot test', () => {
     },
     context: 'spt-mediaplatform-labs',
     tokenSsmPath: '/github/actions/token',
+    webhookSecretSsmPath: '/github/webhook/secret',
+    private: true,
   });
   expect(Template.fromStack(stack).toJSON()).toMatchSnapshot();
 });

@@ -3,14 +3,14 @@
 exports[`Snapshot test 1`] = `
 Object {
   "Outputs": Object {
-    "apiEndpoint9349E63C": Object {
+    "TestStackWebhookApiGatewayEndpointD6484201": Object {
       "Value": Object {
         "Fn::Join": Array [
           "",
           Array [
             "https://",
             Object {
-              "Ref": "apiC8550315",
+              "Ref": "TestStackWebhookApiGatewayC51D2EB5",
             },
             ".execute-api.eu-north-1.",
             Object {
@@ -18,9 +18,31 @@ Object {
             },
             "/",
             Object {
-              "Ref": "apiDeploymentStageprod896C8101",
+              "Ref": "TestStackWebhookApiGatewayDeploymentStageprodC7D48548",
             },
             "/",
+          ],
+        ],
+      },
+    },
+    "WebhookEndpoint": Object {
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+            },
+            ".execute-api.eu-north-1.",
+            Object {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            Object {
+              "Ref": "TestStackWebhookApiGatewayDeploymentStageprodC7D48548",
+            },
+            "/webhook",
           ],
         ],
       },
@@ -56,14 +78,14 @@ Object {
         "AmiInstanceProfile",
       ],
       "Properties": Object {
-        "InstanceProfileName": "GithubActionsRunnerInstanceProfile",
-        "Name": "GithubActionsRunnerAmiInfraConfig",
+        "InstanceProfileName": "TestStack",
+        "Name": "TestStack",
       },
       "Type": "AWS::ImageBuilder::InfrastructureConfiguration",
     },
     "AmiInstanceProfile": Object {
       "Properties": Object {
-        "InstanceProfileName": "GithubActionsRunnerInstanceProfile",
+        "InstanceProfileName": "TestStack",
         "Path": "/executionServiceEC2Role/",
         "Roles": Array [
           Object {
@@ -97,7 +119,7 @@ phases:
             - sudo -u ubuntu tar -zxvf actions-runner-linux-x64-{{ RunnerVersion }}.tar.gz
             - sudo -u ubuntu rm -f actions-runner-linux-x64-{{ RunnerVersion }}.tar.gz
             - sudo ./bin/installdependencies.sh",
-        "Name": "Install Runner",
+        "Name": "TestStack",
         "Platform": "Linux",
         "Version": "1.0.2",
       },
@@ -163,6 +185,21 @@ phases:
               "Condition": Object {
                 "StringLike": Object {
                   "iam:PassedToService": "ec2.amazonaws.com",
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "ssm:getParameters",
+              "Effect": "Allow",
+              "Resource": "arn:aws:ssm:eu-north-1:abc-123:parameter/github/webhook/secret",
+            },
+            Object {
+              "Action": "iam:PassRole",
+              "Condition": Object {
+                "StringLike": Object {
+                  "iam:PassedToService": "ssm.amazonaws.com",
                 },
               },
               "Effect": "Allow",
@@ -294,7 +331,7 @@ echo \\"Shutting down...\\"
 sudo shutdown -h now",
           },
         },
-        "LaunchTemplateName": "GithubActionsRunnerTemplate",
+        "LaunchTemplateName": "TestStack",
       },
       "Type": "AWS::EC2::LaunchTemplate",
     },
@@ -334,7 +371,7 @@ sudo shutdown -h now",
             ],
           },
         ],
-        "Name": "GithubActionsRunnerAmiRecipe",
+        "Name": "TestStack",
         "ParentImage": "arn:aws:imagebuilder:eu-north-1:aws:image/ubuntu-server-20-lts-x86/x.x.x",
         "Version": "0.0.4",
       },
@@ -375,7 +412,7 @@ sudo shutdown -h now",
     "SecurityGroupDD263621": Object {
       "Properties": Object {
         "GroupDescription": "Default/TestStack/SecurityGroup",
-        "GroupName": "github-actions-runners",
+        "GroupName": "TestStack/Vpc",
         "SecurityGroupEgress": Array [
           Object {
             "CidrIp": "0.0.0.0/0",
@@ -392,9 +429,399 @@ sudo shutdown -h now",
             "ToPort": 22,
           },
         ],
-        "VpcId": "vpc-12345",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
       },
       "Type": "AWS::EC2::SecurityGroup",
+    },
+    "TestStackWebhookApiGatewayAccount23C86CBC": Object {
+      "DependsOn": Array [
+        "TestStackWebhookApiGatewayC51D2EB5",
+      ],
+      "Properties": Object {
+        "CloudWatchRoleArn": Object {
+          "Fn::GetAtt": Array [
+            "TestStackWebhookApiGatewayCloudWatchRole449AD6F9",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ApiGateway::Account",
+    },
+    "TestStackWebhookApiGatewayC51D2EB5": Object {
+      "Properties": Object {
+        "Name": "TestStack/WebhookApiGateway",
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "TestStackWebhookApiGatewayCloudWatchRole449AD6F9": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "TestStackWebhookApiGatewayDeployment0E355B0B382c729cb65b58ff5e81f7a450a59616": Object {
+      "DependsOn": Array [
+        "TestStackWebhookApiGatewaywebhookPOSTFABEA6E0",
+        "TestStackWebhookApiGatewaywebhook0F6F5657",
+      ],
+      "Properties": Object {
+        "Description": "Automatically created by the RestApi construct",
+        "RestApiId": Object {
+          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+        },
+      },
+      "Type": "AWS::ApiGateway::Deployment",
+    },
+    "TestStackWebhookApiGatewayDeploymentStageprodC7D48548": Object {
+      "DependsOn": Array [
+        "TestStackWebhookApiGatewayAccount23C86CBC",
+      ],
+      "Properties": Object {
+        "DeploymentId": Object {
+          "Ref": "TestStackWebhookApiGatewayDeployment0E355B0B382c729cb65b58ff5e81f7a450a59616",
+        },
+        "RestApiId": Object {
+          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+        },
+        "StageName": "prod",
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "TestStackWebhookApiGatewaywebhook0F6F5657": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "TestStackWebhookApiGatewayC51D2EB5",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "webhook",
+        "RestApiId": Object {
+          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "TestStackWebhookApiGatewaywebhookPOSTApiPermissionTestStackTestStackWebhookApiGateway1565C3E7POSTwebhookAA36E9D2": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "WebhookLambda118EFE5D",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:eu-north-1:abc-123:",
+              Object {
+                "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+              },
+              "/",
+              Object {
+                "Ref": "TestStackWebhookApiGatewayDeploymentStageprodC7D48548",
+              },
+              "/POST/webhook",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "TestStackWebhookApiGatewaywebhookPOSTApiPermissionTestTestStackTestStackWebhookApiGateway1565C3E7POSTwebhook14412321": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "WebhookLambda118EFE5D",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:eu-north-1:abc-123:",
+              Object {
+                "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+              },
+              "/test-invoke-stage/POST/webhook",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "TestStackWebhookApiGatewaywebhookPOSTFABEA6E0": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "POST",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "WebhookLambda118EFE5D",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "TestStackWebhookApiGatewaywebhook0F6F5657",
+        },
+        "RestApiId": Object {
+          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "Vpc8378EB38": Object {
+      "Properties": Object {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/Vpc",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::VPC",
+    },
+    "VpcIGWD7BA715C": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/Vpc",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::InternetGateway",
+    },
+    "VpcTestStackSubnetPrivateSubnet1DefaultRoute0D62CC49": Object {
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": Object {
+          "Ref": "VpcTestStackSubnetPublicSubnet1NATGateway87C6515D",
+        },
+        "RouteTableId": Object {
+          "Ref": "VpcTestStackSubnetPrivateSubnet1RouteTable95DF4D5A",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VpcTestStackSubnetPrivateSubnet1RouteTable95DF4D5A": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "Default/TestStack/Vpc/TestStack--Subnet--PrivateSubnet1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VpcTestStackSubnetPrivateSubnet1RouteTableAssociation6191BE17": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "VpcTestStackSubnetPrivateSubnet1RouteTable95DF4D5A",
+        },
+        "SubnetId": Object {
+          "Ref": "VpcTestStackSubnetPrivateSubnet1SubnetA3F474CA",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VpcTestStackSubnetPrivateSubnet1SubnetA3F474CA": Object {
+      "Properties": Object {
+        "AvailabilityZone": "dummy1a",
+        "CidrBlock": "10.0.128.0/17",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "TestStack/Subnet/Private",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "Default/TestStack/Vpc/TestStack--Subnet--PrivateSubnet1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VpcTestStackSubnetPublicSubnet1DefaultRoute0178ED9D": Object {
+      "DependsOn": Array [
+        "VpcVPCGWBF912B6E",
+      ],
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": Object {
+          "Ref": "VpcIGWD7BA715C",
+        },
+        "RouteTableId": Object {
+          "Ref": "VpcTestStackSubnetPublicSubnet1RouteTable09DFF1F6",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VpcTestStackSubnetPublicSubnet1EIP82059DD7": Object {
+      "Properties": Object {
+        "Domain": "vpc",
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "Default/TestStack/Vpc/TestStack--Subnet--PublicSubnet1",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::EIP",
+    },
+    "VpcTestStackSubnetPublicSubnet1NATGateway87C6515D": Object {
+      "Properties": Object {
+        "AllocationId": Object {
+          "Fn::GetAtt": Array [
+            "VpcTestStackSubnetPublicSubnet1EIP82059DD7",
+            "AllocationId",
+          ],
+        },
+        "SubnetId": Object {
+          "Ref": "VpcTestStackSubnetPublicSubnet1SubnetDCD4A9BB",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "Default/TestStack/Vpc/TestStack--Subnet--PublicSubnet1",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::NatGateway",
+    },
+    "VpcTestStackSubnetPublicSubnet1RouteTable09DFF1F6": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "Default/TestStack/Vpc/TestStack--Subnet--PublicSubnet1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VpcTestStackSubnetPublicSubnet1RouteTableAssociationD4A5F9A4": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "VpcTestStackSubnetPublicSubnet1RouteTable09DFF1F6",
+        },
+        "SubnetId": Object {
+          "Ref": "VpcTestStackSubnetPublicSubnet1SubnetDCD4A9BB",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VpcTestStackSubnetPublicSubnet1SubnetDCD4A9BB": Object {
+      "Properties": Object {
+        "AvailabilityZone": "dummy1a",
+        "CidrBlock": "10.0.0.0/17",
+        "MapPublicIpOnLaunch": true,
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "TestStack/Subnet/Public",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "Default/TestStack/Vpc/TestStack--Subnet--PublicSubnet1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VpcVPCGWBF912B6E": Object {
+      "Properties": Object {
+        "InternetGatewayId": Object {
+          "Ref": "VpcIGWD7BA715C",
+        },
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment",
     },
     "WebhookLambda118EFE5D": Object {
       "DependsOn": Array [
@@ -403,11 +830,15 @@ sudo shutdown -h now",
       "Properties": Object {
         "Code": Object {
           "S3Bucket": "cdk-hnb659fds-assets-abc-123-eu-north-1",
-          "S3Key": "b4495ced0aa18646ab37f42d23c98fd045de74b3bcc8e8e764a7579d5f4fc9f5.zip",
+          "S3Key": "ee7b1c20240299475391eccd70c1da48a006e1aac150c934f16c007fecfd58ea.zip",
         },
         "Environment": Object {
           "Variables": Object {
             "context": "spt-mediaplatform-labs",
+            "spot": "true",
+            "subnetId": Object {
+              "Ref": "VpcTestStackSubnetPrivateSubnet1SubnetA3F474CA",
+            },
             "templateId": Object {
               "Ref": "LaunchTemplate04EC5460",
             },
@@ -417,6 +848,8 @@ sudo shutdown -h now",
                 "LatestVersionNumber",
               ],
             },
+            "webhookSecretSsmArn": "arn:aws:ssm:eu-north-1:abc-123:parameter/github/webhook/secret",
+            "webhookSecretSsmPath": "/github/webhook/secret",
           },
         },
         "Handler": "handler.handler",
@@ -460,198 +893,6 @@ sudo shutdown -h now",
         ],
       },
       "Type": "AWS::IAM::Role",
-    },
-    "apiAccount57E28B43": Object {
-      "DependsOn": Array [
-        "apiC8550315",
-      ],
-      "Properties": Object {
-        "CloudWatchRoleArn": Object {
-          "Fn::GetAtt": Array [
-            "apiCloudWatchRoleAC81D93E",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "AWS::ApiGateway::Account",
-    },
-    "apiC8550315": Object {
-      "Properties": Object {
-        "Name": "api",
-      },
-      "Type": "AWS::ApiGateway::RestApi",
-    },
-    "apiCloudWatchRoleAC81D93E": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "apigateway.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "apiDeployment149F129491d0c069ff1ae77e5ca543966e2abdea": Object {
-      "DependsOn": Array [
-        "apiwebhookPOSTB12B11A0",
-        "apiwebhook7D40138A",
-      ],
-      "Properties": Object {
-        "Description": "Automatically created by the RestApi construct",
-        "RestApiId": Object {
-          "Ref": "apiC8550315",
-        },
-      },
-      "Type": "AWS::ApiGateway::Deployment",
-    },
-    "apiDeploymentStageprod896C8101": Object {
-      "DependsOn": Array [
-        "apiAccount57E28B43",
-      ],
-      "Properties": Object {
-        "DeploymentId": Object {
-          "Ref": "apiDeployment149F129491d0c069ff1ae77e5ca543966e2abdea",
-        },
-        "RestApiId": Object {
-          "Ref": "apiC8550315",
-        },
-        "StageName": "prod",
-      },
-      "Type": "AWS::ApiGateway::Stage",
-    },
-    "apiwebhook7D40138A": Object {
-      "Properties": Object {
-        "ParentId": Object {
-          "Fn::GetAtt": Array [
-            "apiC8550315",
-            "RootResourceId",
-          ],
-        },
-        "PathPart": "webhook",
-        "RestApiId": Object {
-          "Ref": "apiC8550315",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "apiwebhookPOSTApiPermissionTestStackapiF0E8311DPOSTwebhook95871F4F": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "WebhookLambda118EFE5D",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:eu-north-1:abc-123:",
-              Object {
-                "Ref": "apiC8550315",
-              },
-              "/",
-              Object {
-                "Ref": "apiDeploymentStageprod896C8101",
-              },
-              "/POST/webhook",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "apiwebhookPOSTApiPermissionTestTestStackapiF0E8311DPOSTwebhookB4A914DC": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "WebhookLambda118EFE5D",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:eu-north-1:abc-123:",
-              Object {
-                "Ref": "apiC8550315",
-              },
-              "/test-invoke-stage/POST/webhook",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "apiwebhookPOSTB12B11A0": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "POST",
-        "Integration": Object {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
-                    "WebhookLambda118EFE5D",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": Object {
-          "Ref": "apiwebhook7D40138A",
-        },
-        "RestApiId": Object {
-          "Ref": "apiC8550315",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
     },
   },
   "Rules": Object {
