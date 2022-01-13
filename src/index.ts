@@ -1,4 +1,4 @@
-import { Stack } from 'aws-cdk-lib';
+import { Stack, CfnOutput } from 'aws-cdk-lib';
 import {
   Vpc,
   Peer,
@@ -51,13 +51,17 @@ export class GithubActionsRunners extends Stack {
     ).map(x => x.subnetId)[0];
 
     const vm = setupVMRunners(this, props, securityGroup);
-    setupWekhook(this, {
+    const webhook = setupWekhook(this, {
       ...vm,
       subnetId,
       context: props.context,
       spot: (props.spot ?? true).toString(),
       webhookSecretSsmPath: props.webhookSecretSsmPath,
       webhookSecretSsmArn: `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter${props.webhookSecretSsmPath}`,
+    });
+
+    new CfnOutput(this, 'WebhookEndpoint', {
+      value: `${webhook.url}webhook`,
     });
   }
 }
