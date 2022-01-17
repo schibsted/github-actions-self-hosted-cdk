@@ -9,7 +9,8 @@ It has been designed to be:
 :moneybag: **As cost effective as possible**<br />
 :gem: **Highly elastic**<br />
 :sleeping_bed: **Minimal maintenance**<br />
-:recycle: **Ephemeral**<br />
+:stop_sign: **Secure by default**<br />
+:recycle: **Ephemeral short-lived instances**<br />
 :hugs: **Easy to use**<br />
 
 ## :tophat: Features
@@ -19,6 +20,7 @@ It has been designed to be:
 - Runners are launched on ephemeral EC2 instances with a Docker daemon running to support Docker builds.
 - All instance types are supported.
 - Spot instances are used by default.
+- The launched instances do not accept any incoming traffic.
 - Instance types are configurable per job, making it possible to optimize the underlying instance per workload.
 - ~~Both x86 and ARM based instances are supported.~~ (Soon)
 
