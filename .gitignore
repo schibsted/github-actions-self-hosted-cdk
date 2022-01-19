@@ -5,5 +5,5 @@ build
 node_modules
 cdk.out
 cdk.json
-cdk.content.json
+cdk.context.json
 *.tgz
