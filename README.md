@@ -90,20 +90,25 @@ new GithubActionsRunners(app, 'MyRunners', {
     account: '1234567890',
     region: 'eu-north-1',
   },
-  // This can be either the name of a GH org or org/repo combination (e.g. my-org/my-repo)
-  context: 'my-github-org',
-  // A path in AWS Parameter Store where a Github token is securely stored
-  tokenSsmPath: '/github/actions/token',
-  // A path in AWS Parameter Store where a Github webhook secret is securly stored
-  webhookSecretSsmPath: '/github/webhook/secret',
-  // Optional: Set private to true to launch runners in a private subnet which communicates with the Internet through a NAT Gateway. Set to false to launch runners in a public subnet. Default: false
-  private: true,
-  // Optional: Launch runners on spot instances. Default: true
-  spot: true,
-  // Optional: Specify which Github Actions runner version to use. Default: 2.286.0
-  runnerVersion: '252.1.0',
-  // Optional: Launch runners into the specified runner group. Default: use the default group
-  runnerGroup: 'labs',
+  // Optional: Set privateSubnets to true to launch runners in a private subnet which communicates with the Internet through a NAT Gateway. Set to false to launch runners in a public subnet. Default: false
+  privateSubnets: true,
+  // A list of all orgs and/or repos to configure
+  contexts: [
+    {
+      // An arbitrary name
+      name: 'Labs1',
+      // This can be either the name of a GH org or org/repo combination (e.g. my-org/my-repo)
+      scope: 'spt-mediaplatform-labs',
+      // A path in AWS Parameter Store where a Github webhook secret is securly stored
+      webhookSecretSsmPath: '/github/webhook/secret',
+      // A path in AWS Parameter Store where a Github token is securely stored
+      tokenSsmPath: '/github/actions/token',
+      // Optional: Launch runners on spot instances. Default: true
+      spot: true,
+      // Optional: Terminate a runner after some time period. Default: 30m
+      timeout: '10m',
+    },
+  ],
 });
 ```
 
