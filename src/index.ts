@@ -41,7 +41,7 @@ export class GithubActionsRunners extends Stack {
       securityGroupName: `${id}/Vpc`,
     });
 
-    if (props.vm?.enableEc2InstanceConnect) {
+    if (props.debugMode) {
       securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
     }
 
@@ -50,18 +50,20 @@ export class GithubActionsRunners extends Stack {
     ).map(x => x.subnetId)[0];
 
     const { imageId } = buildImage(this, props);
-    const vm = setupRunners(this, props, securityGroup, imageId);
-    const webhook = setupWekhook(this, {
-      ...vm,
-      subnetId,
-      context: props.context,
-      spot: (props.spot ?? true).toString(),
-      webhookSecretSsmPath: props.webhookSecretSsmPath,
-      webhookSecretSsmArn: `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter${props.webhookSecretSsmPath}`,
-    });
+    props.contexts?.forEach(context => {
+      const vm = setupRunners(this, props, context, securityGroup, imageId);
+      const webhook = setupWekhook(this, context, {
+        ...vm,
+        subnetId,
+        context: context.scope,
+        spot: (context.spot ?? true).toString(),
+        webhookSecretSsmPath: context.webhookSecretSsmPath,
+        webhookSecretSsmArn: `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter${context.webhookSecretSsmPath}`,
+      });
 
-    new CfnOutput(this, 'WebhookEndpoint', {
-      value: `${webhook.url}webhook`,
+      new CfnOutput(this, `WebhookEndpoint-${context.name}`, {
+        value: `${webhook.url}webhook`,
+      });
     });
   }
 }

@@ -52,14 +52,14 @@ Something like this in `.npmrc` should do the trick:
 ### Ship it!
 
 1. Create a CDK project using the `@spp/github-actions-self-hosted` construct (example below).
-3. `cdk deploy`
-4. Wait for it... Profit! _(it'll take quite some time on the first deploy)_.
-5. The deploy command will output a webhook endpoint, called `NameOfStack.WebhookEndpoint`.
-6. Configure a hook in your Github org or repo to send `Workflow jobs` events to that endpoint.
+2. `cdk deploy`
+3. Wait for it... Profit! _(it'll take quite some time on the first deploy)_.
+4. The deploy command will output a webhook endpoint, called `NameOfStack.WebhookEndpoint`.
+5. Configure a hook in your Github org or repo to send `Workflow jobs` events to that endpoint.
    - `https://github.schibsted.io/organizations/my-org/settings/hooks`
    - Content type: `application/json`.
    - Set a secret for the webhook and save that in AWS Parameter Store, for example in path `/github/webhhok/secret`.
-7. Create Github Personal Access Token with `workflow` and `admin:org` scopes. Save that token in AWS Parameter Store, for example in `/github/actions/token`.
+6. Create Github Personal Access Token with `workflow` and `admin:org` scopes. Save that token in AWS Parameter Store, for example in `/github/actions/token`.
 
 ## :ribbon: Example project
 

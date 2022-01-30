@@ -10,16 +10,19 @@ export interface WebhookEnvironment {
   webhookSecretSsmArn: string;
 }
 
-export interface GithubActionsRunnersProps extends StackProps {
-  runnerTimeout?: string;
-  context: string;
-  tokenSsmPath: string;
-  webhookSecretSsmPath: string;
-  runnerVersion?: string;
-  runnerGroup?: string;
-  vm?: {
-    enableEc2InstanceConnect?: boolean;
-  };
-  private?: boolean;
+export interface Context {
+  name: string;
+  scope: string;
+  group?: string;
+  timeout?: string;
   spot?: boolean;
+  webhookSecretSsmPath: string;
+}
+
+export interface GithubActionsRunnersProps extends StackProps {
+  tokenSsmPath: string;
+  runnerVersion?: string;
+  debugMode?: boolean;
+  private?: boolean;
+  contexts?: Context[];
 }
