@@ -8,7 +8,7 @@ import {
 } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { GithubActionsRunnersProps } from './types';
-import { setupVMRunners } from './vm';
+import { buildImage, setupRunners } from './vm';
 import { setupWekhook } from './webhook';
 
 export class GithubActionsRunners extends Stack {
@@ -50,7 +50,8 @@ export class GithubActionsRunners extends Stack {
       props.private ? vpc.privateSubnets : vpc.publicSubnets
     ).map(x => x.subnetId)[0];
 
-    const vm = setupVMRunners(this, props, securityGroup);
+    const { imageId } = buildImage(this, props);
+    const vm = setupRunners(this, props, securityGroup, imageId);
     const webhook = setupWekhook(this, {
       ...vm,
       subnetId,

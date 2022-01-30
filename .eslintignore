@@ -1,4 +1,5 @@
 build
+bin
 docs
 node_modules
 cdk.out
