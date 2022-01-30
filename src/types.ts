@@ -23,6 +23,6 @@ export interface Context {
 export interface GithubActionsRunnersProps extends StackProps {
   runnerVersion?: string;
   debugMode?: boolean;
-  private?: boolean;
+  privateSubnets?: boolean;
   contexts?: Context[];
 }

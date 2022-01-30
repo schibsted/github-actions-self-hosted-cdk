@@ -22,7 +22,7 @@ export class GithubActionsRunners extends Stack {
       },
     ];
 
-    if (props.private) {
+    if (props.privateSubnets) {
       subnetConfiguration.push({
         name: `${id}/Subnet/Private`,
         subnetType: SubnetType.PRIVATE_WITH_NAT,
@@ -46,7 +46,7 @@ export class GithubActionsRunners extends Stack {
     }
 
     const subnetId = (
-      props.private ? vpc.privateSubnets : vpc.publicSubnets
+      props.privateSubnets ? vpc.privateSubnets : vpc.publicSubnets
     ).map(x => x.subnetId)[0];
 
     const { imageId } = buildImage(this, props);

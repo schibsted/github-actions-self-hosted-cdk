@@ -8,7 +8,7 @@ test('Snapshot test', () => {
       account: 'abc-123',
       region: 'eu-north-1',
     },
-    private: true,
+    privateSubnets: true,
     contexts: [
       {
         name: 'Labs1',
