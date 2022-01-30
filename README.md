@@ -54,7 +54,7 @@ Something like this in `.npmrc` should do the trick:
 1. Create a CDK project using the `@spp/github-actions-self-hosted` construct (example below).
 2. `cdk deploy`
 3. Wait for it... Profit! _(it'll take quite some time on the first deploy)_.
-4. The deploy command will output a webhook endpoint, called `NameOfStack.WebhookEndpoint`.
+4. The deploy command will output a webhook endpoint, called something like `NameOfStack.WebhookEndpoint`.
 5. Configure a hook in your Github org or repo to send `Workflow jobs` events to that endpoint.
    - `https://github.schibsted.io/organizations/my-org/settings/hooks`
    - Content type: `application/json`.
@@ -92,6 +92,13 @@ new GithubActionsRunners(app, 'MyRunners', {
   },
   // Optional: Set privateSubnets to true to launch runners in a private subnet which communicates with the Internet through a NAT Gateway. Set to false to launch runners in a public subnet. Default: false
   privateSubnets: true,
+  // Optional: A custom domain name to be used for the Github webhook
+  domains: {
+    // The domain name to use for the webhook
+    domain: 'hello.example.com',
+    // The hosted zone for the domain. Must be in the same AWS/Route53 account.
+    hostedZoneDomain: 'example.com',
+  },
   // A list of all orgs and/or repos to configure
   contexts: [
     {

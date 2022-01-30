@@ -9,7 +9,7 @@ import {
 import { Construct } from 'constructs';
 import { GithubActionsRunnersProps } from './types';
 import { buildImage, setupRunners } from './vm';
-import { setupWekhook } from './webhook';
+import { setupApiGateway, setupWekhook } from './webhook';
 
 export class GithubActionsRunners extends Stack {
   constructor(scope: Construct, id: string, props: GithubActionsRunnersProps) {
@@ -50,9 +50,10 @@ export class GithubActionsRunners extends Stack {
     ).map(x => x.subnetId)[0];
 
     const { imageId } = buildImage(this, props);
+    const gateway = setupApiGateway(this, props.domain);
     props.contexts?.forEach(context => {
       const vm = setupRunners(this, props, context, securityGroup, imageId);
-      const webhook = setupWekhook(this, context, {
+      const webhook = setupWekhook(this, context, gateway, {
         ...vm,
         subnetId,
         scope: context.scope,
@@ -60,9 +61,11 @@ export class GithubActionsRunners extends Stack {
         webhookSecretSsmPath: context.webhookSecretSsmPath,
         webhookSecretSsmArn: `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter${context.webhookSecretSsmPath}`,
       });
-
-      new CfnOutput(this, `WebhookEndpoint-${context.name}`, {
-        value: `${webhook.url}webhook`,
+      const endpoint = webhook.domain
+        ? `https://${webhook.domain.domainName}/${context.scope}`
+        : `${webhook.url}${context.scope}`;
+      new CfnOutput(this, `WebhookEndpoint.${context.name}`, {
+        value: endpoint,
       });
     });
   }
