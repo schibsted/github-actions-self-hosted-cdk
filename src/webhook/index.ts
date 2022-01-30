@@ -3,10 +3,14 @@ import { RestApi, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { PolicyStatement, Policy } from 'aws-cdk-lib/aws-iam';
 import path from 'path';
-import { WebhookEnvironment } from '../types';
+import { WebhookEnvironment, Context } from '../types';
 
-export const setupWekhook = (stack: Stack, env: WebhookEnvironment) => {
-  const func = new Function(stack, 'WebhookLambda', {
+export const setupWekhook = (
+  stack: Stack,
+  context: Context,
+  env: WebhookEnvironment,
+) => {
+  const func = new Function(stack, `WebhookLambda${context.name}`, {
     runtime: Runtime.NODEJS_14_X,
     handler: 'handler.handler',
     code: Code.fromAsset(path.join(__dirname, '.')),
@@ -15,7 +19,7 @@ export const setupWekhook = (stack: Stack, env: WebhookEnvironment) => {
     },
   });
   func.role?.attachInlinePolicy(
-    new Policy(stack, 'LaunchGithubActionsRunner', {
+    new Policy(stack, `LaunchGithubActionsRunner${context.name}`, {
       statements: [
         new PolicyStatement({
           actions: ['ec2:RunInstances', 'ec2:CreateTags'],
@@ -46,7 +50,10 @@ export const setupWekhook = (stack: Stack, env: WebhookEnvironment) => {
       ],
     }),
   );
-  const api = new RestApi(stack, `${stack.artifactId}/WebhookApiGateway`);
+  const api = new RestApi(
+    stack,
+    `${stack.artifactId}/${context.name}/WebhookApiGateway`,
+  );
   const resource = api.root.addResource('webhook');
   resource.addMethod('POST', new LambdaIntegration(func));
 

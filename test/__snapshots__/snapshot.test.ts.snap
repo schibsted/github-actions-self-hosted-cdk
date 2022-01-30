@@ -3,14 +3,14 @@
 exports[`Snapshot test 1`] = `
 Object {
   "Outputs": Object {
-    "TestStackWebhookApiGatewayEndpointD6484201": Object {
+    "TestStackLabs1WebhookApiGatewayEndpoint8DA36E91": Object {
       "Value": Object {
         "Fn::Join": Array [
           "",
           Array [
             "https://",
             Object {
-              "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+              "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
             },
             ".execute-api.eu-north-1.",
             Object {
@@ -18,21 +18,21 @@ Object {
             },
             "/",
             Object {
-              "Ref": "TestStackWebhookApiGatewayDeploymentStageprodC7D48548",
+              "Ref": "TestStackLabs1WebhookApiGatewayDeploymentStageprodE39B5FA3",
             },
             "/",
           ],
         ],
       },
     },
-    "WebhookEndpoint": Object {
+    "TestStackLabs2WebhookApiGatewayEndpointB19A44B4": Object {
       "Value": Object {
         "Fn::Join": Array [
           "",
           Array [
             "https://",
             Object {
-              "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+              "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
             },
             ".execute-api.eu-north-1.",
             Object {
@@ -40,7 +40,51 @@ Object {
             },
             "/",
             Object {
-              "Ref": "TestStackWebhookApiGatewayDeploymentStageprodC7D48548",
+              "Ref": "TestStackLabs2WebhookApiGatewayDeploymentStageprodC4B84E28",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+    "WebhookEndpointLabs1": Object {
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
+            },
+            ".execute-api.eu-north-1.",
+            Object {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            Object {
+              "Ref": "TestStackLabs1WebhookApiGatewayDeploymentStageprodE39B5FA3",
+            },
+            "/webhook",
+          ],
+        ],
+      },
+    },
+    "WebhookEndpointLabs2": Object {
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
+            },
+            ".execute-api.eu-north-1.",
+            Object {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            Object {
+              "Ref": "TestStackLabs2WebhookApiGatewayDeploymentStageprodC4B84E28",
             },
             "/webhook",
           ],
@@ -168,7 +212,7 @@ phases:
       },
       "Type": "AWS::IAM::Role",
     },
-    "LaunchGithubActionsRunner65ABA738": Object {
+    "LaunchGithubActionsRunnerLabs1A1A87F73": Object {
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -208,22 +252,71 @@ phases:
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "LaunchGithubActionsRunner65ABA738",
+        "PolicyName": "LaunchGithubActionsRunnerLabs1A1A87F73",
         "Roles": Array [
           Object {
-            "Ref": "WebhookLambdaServiceRoleDB3A5765",
+            "Ref": "WebhookLambdaLabs1ServiceRole14ECDFC0",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "LaunchTemplate04EC5460": Object {
+    "LaunchGithubActionsRunnerLabs242D43EB6": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "ec2:RunInstances",
+                "ec2:CreateTags",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "iam:PassRole",
+              "Condition": Object {
+                "StringLike": Object {
+                  "iam:PassedToService": "ec2.amazonaws.com",
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "ssm:getParameters",
+              "Effect": "Allow",
+              "Resource": "arn:aws:ssm:eu-north-1:abc-123:parameter/github/webhook/another-secret",
+            },
+            Object {
+              "Action": "iam:PassRole",
+              "Condition": Object {
+                "StringLike": Object {
+                  "iam:PassedToService": "ssm.amazonaws.com",
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "LaunchGithubActionsRunnerLabs242D43EB6",
+        "Roles": Array [
+          Object {
+            "Ref": "WebhookLambdaLabs2ServiceRoleCA8B2454",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "LaunchTemplateLabs1C57C2498": Object {
       "Properties": Object {
         "LaunchTemplateData": Object {
           "IamInstanceProfile": Object {
             "Arn": Object {
               "Fn::GetAtt": Array [
-                "LaunchTemplateProfile94AA77CE",
+                "LaunchTemplateLabs1Profile3E9FBD5E",
                 "Arn",
               ],
             },
@@ -250,7 +343,7 @@ phases:
               "Tags": Array [
                 Object {
                   "Key": "Name",
-                  "Value": "Default/TestStack/LaunchTemplate",
+                  "Value": "Default/TestStack/LaunchTemplate--Labs1",
                 },
               ],
             },
@@ -259,7 +352,7 @@ phases:
               "Tags": Array [
                 Object {
                   "Key": "Name",
-                  "Value": "Default/TestStack/LaunchTemplate",
+                  "Value": "Default/TestStack/LaunchTemplate--Labs1",
                 },
               ],
             },
@@ -270,8 +363,8 @@ phases:
 AWS_REGION=eu-north-1
 AWS_INSTANCE_TYPE=$(curl http://169.254.169.254/latest/meta-data/instance-type)
 GH_TOKEN_SSM_PATH=/github/actions/token
-RUNNER_CONTEXT=spt-mediaplatform-labs
-RUNNER_TIMEOUT=60m
+RUNNER_SCOPE=spt-mediaplatform-labs
+RUNNER_TIMEOUT=10m
 RUNNER_GROUP=default
 
 RUNNER_WORKDIR=_work
@@ -286,8 +379,8 @@ deregister_runner() {
 init() {
   GITHUB_TOKEN=$(aws ssm get-parameters --name \${GH_TOKEN_SSM_PATH} --region \${AWS_REGION} --with-decryption | jq -r .Parameters[0].Value)
   AUTH_HEADER=\\"Authorization: token \${GITHUB_TOKEN}\\"
-  ORG=$(cut -d/ -f1 <<< \${RUNNER_CONTEXT})
-  REPO=$(cut -d/ -f2 <<< \${RUNNER_CONTEXT})
+  ORG=$(cut -d/ -f1 <<< \${RUNNER_SCOPE})
+  REPO=$(cut -d/ -f2 <<< \${RUNNER_SCOPE})
 
   if [[ -z \\"\${REPOSITORY}\\" ]]; then
     TOKEN_REGISTRATION_URL=\\"https://github.schibsted.io/api/v3/orgs/\${ORG}/actions/runners/registration-token\\"
@@ -303,7 +396,7 @@ init() {
 }
 
 configure() {
-  sudo -u ubuntu ./config.sh --url \\"https://github.schibsted.io/\${RUNNER_CONTEXT}\\" \\\\
+  sudo -u ubuntu ./config.sh --url \\"https://github.schibsted.io/\${RUNNER_SCOPE}\\" \\\\
     --token \\"\${RUNNER_TOKEN}\\" \\\\
     --labels \\"vm:\${AWS_INSTANCE_TYPE}\\" \\\\
     --work \\"\${RUNNER_WORKDIR}\\" \\\\
@@ -331,15 +424,143 @@ echo \\"Shutting down...\\"
 sudo shutdown -h now",
           },
         },
-        "LaunchTemplateName": "TestStack",
+        "LaunchTemplateName": "TestStack/Labs1",
       },
       "Type": "AWS::EC2::LaunchTemplate",
     },
-    "LaunchTemplateProfile94AA77CE": Object {
+    "LaunchTemplateLabs1Profile3E9FBD5E": Object {
       "Properties": Object {
         "Roles": Array [
           Object {
-            "Ref": "RunnerRoleBA0605C0",
+            "Ref": "RunnerRoleLabs1E076ED91",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::InstanceProfile",
+    },
+    "LaunchTemplateLabs28C6D0996": Object {
+      "Properties": Object {
+        "LaunchTemplateData": Object {
+          "IamInstanceProfile": Object {
+            "Arn": Object {
+              "Fn::GetAtt": Array [
+                "LaunchTemplateLabs2Profile7589BE97",
+                "Arn",
+              ],
+            },
+          },
+          "ImageId": Object {
+            "Fn::GetAtt": Array [
+              "Ami",
+              "ImageId",
+            ],
+          },
+          "InstanceInitiatedShutdownBehavior": "terminate",
+          "InstanceType": "t3.micro",
+          "SecurityGroupIds": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "SecurityGroupDD263621",
+                "GroupId",
+              ],
+            },
+          ],
+          "TagSpecifications": Array [
+            Object {
+              "ResourceType": "instance",
+              "Tags": Array [
+                Object {
+                  "Key": "Name",
+                  "Value": "Default/TestStack/LaunchTemplate--Labs2",
+                },
+              ],
+            },
+            Object {
+              "ResourceType": "volume",
+              "Tags": Array [
+                Object {
+                  "Key": "Name",
+                  "Value": "Default/TestStack/LaunchTemplate--Labs2",
+                },
+              ],
+            },
+          ],
+          "UserData": Object {
+            "Fn::Base64": "#!/bin/bash
+
+AWS_REGION=eu-north-1
+AWS_INSTANCE_TYPE=$(curl http://169.254.169.254/latest/meta-data/instance-type)
+GH_TOKEN_SSM_PATH=/github/actions/token
+RUNNER_SCOPE=spt-mediaplatform-another-labs
+RUNNER_TIMEOUT=30m
+RUNNER_GROUP=default
+
+RUNNER_WORKDIR=_work
+
+cd /home/ubuntu
+
+deregister_runner() {
+  echo \\"Exit signal caught, deregistering runner...\\"
+  sudo -u ubuntu ./config.sh remove --unattended --token \\"\${RUNNER_TOKEN}\\"
+}
+
+init() {
+  GITHUB_TOKEN=$(aws ssm get-parameters --name \${GH_TOKEN_SSM_PATH} --region \${AWS_REGION} --with-decryption | jq -r .Parameters[0].Value)
+  AUTH_HEADER=\\"Authorization: token \${GITHUB_TOKEN}\\"
+  ORG=$(cut -d/ -f1 <<< \${RUNNER_SCOPE})
+  REPO=$(cut -d/ -f2 <<< \${RUNNER_SCOPE})
+
+  if [[ -z \\"\${REPOSITORY}\\" ]]; then
+    TOKEN_REGISTRATION_URL=\\"https://github.schibsted.io/api/v3/orgs/\${ORG}/actions/runners/registration-token\\"
+  else
+    TOKEN_REGISTRATION_URL=\\"https://github.schibsted.io/api/v3/repos/\${ORG}/\${REPO}/actions/runners/registration-token\\"
+  fi
+
+  RUNNER_TOKEN=\\"$(sudo -u ubuntu curl -XPOST -fsSL \\\\
+    -H \\"Accept: application/vnd.github.v3+json\\" \\\\
+    -H \\"\${AUTH_HEADER}\\" \\\\
+    \\"\${TOKEN_REGISTRATION_URL}\\" \\\\
+    | jq -r '.token')\\"
+}
+
+configure() {
+  sudo -u ubuntu ./config.sh --url \\"https://github.schibsted.io/\${RUNNER_SCOPE}\\" \\\\
+    --token \\"\${RUNNER_TOKEN}\\" \\\\
+    --labels \\"vm:\${AWS_INSTANCE_TYPE}\\" \\\\
+    --work \\"\${RUNNER_WORKDIR}\\" \\\\
+    --runnergroup \\"\${RUNNER_GROUP}\\" \\\\
+    --unattended \\\\
+    --ephemeral
+}
+
+run() {
+  trap deregister_runner SIGINT SIGQUIT SIGTERM INT QUIT TERM
+  sudo -u ubuntu timeout --signal=15 \\"\${RUNNER_TIMEOUT}\\" ./run.sh & wait $! && return
+  deregister_runner
+}
+
+echo \\"Init...\\"
+init
+
+echo \\"Configuring...\\"
+configure
+
+echo \\"Running...\\"
+run
+
+echo \\"Shutting down...\\"
+sudo shutdown -h now",
+          },
+        },
+        "LaunchTemplateName": "TestStack/Labs2",
+      },
+      "Type": "AWS::EC2::LaunchTemplate",
+    },
+    "LaunchTemplateLabs2Profile7589BE97": Object {
+      "Properties": Object {
+        "Roles": Array [
+          Object {
+            "Ref": "RunnerRoleLabs235DB9FD1",
           },
         ],
       },
@@ -377,7 +598,39 @@ sudo shutdown -h now",
       },
       "Type": "AWS::ImageBuilder::ImageRecipe",
     },
-    "RunnerRoleBA0605C0": Object {
+    "RunnerRoleLabs1E076ED91": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "ec2.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": "ssm:*",
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "ssm-policy",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "RunnerRoleLabs235DB9FD1": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -420,42 +673,33 @@ sudo shutdown -h now",
             "IpProtocol": "-1",
           },
         ],
-        "SecurityGroupIngress": Array [
-          Object {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "from 0.0.0.0/0:22",
-            "FromPort": 22,
-            "IpProtocol": "tcp",
-            "ToPort": 22,
-          },
-        ],
         "VpcId": Object {
           "Ref": "Vpc8378EB38",
         },
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "TestStackWebhookApiGatewayAccount23C86CBC": Object {
+    "TestStackLabs1WebhookApiGatewayA6F58624": Object {
+      "Properties": Object {
+        "Name": "TestStack/Labs1/WebhookApiGateway",
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "TestStackLabs1WebhookApiGatewayAccount04B11408": Object {
       "DependsOn": Array [
-        "TestStackWebhookApiGatewayC51D2EB5",
+        "TestStackLabs1WebhookApiGatewayA6F58624",
       ],
       "Properties": Object {
         "CloudWatchRoleArn": Object {
           "Fn::GetAtt": Array [
-            "TestStackWebhookApiGatewayCloudWatchRole449AD6F9",
+            "TestStackLabs1WebhookApiGatewayCloudWatchRole9B570398",
             "Arn",
           ],
         },
       },
       "Type": "AWS::ApiGateway::Account",
     },
-    "TestStackWebhookApiGatewayC51D2EB5": Object {
-      "Properties": Object {
-        "Name": "TestStack/WebhookApiGateway",
-      },
-      "Type": "AWS::ApiGateway::RestApi",
-    },
-    "TestStackWebhookApiGatewayCloudWatchRole449AD6F9": Object {
+    "TestStackLabs1WebhookApiGatewayCloudWatchRole9B570398": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -486,55 +730,55 @@ sudo shutdown -h now",
       },
       "Type": "AWS::IAM::Role",
     },
-    "TestStackWebhookApiGatewayDeployment0E355B0B382c729cb65b58ff5e81f7a450a59616": Object {
+    "TestStackLabs1WebhookApiGatewayDeploymentABD66C6832920a5562573cc22887d47d3981dd6a": Object {
       "DependsOn": Array [
-        "TestStackWebhookApiGatewaywebhookPOSTFABEA6E0",
-        "TestStackWebhookApiGatewaywebhook0F6F5657",
+        "TestStackLabs1WebhookApiGatewaywebhookPOSTDE6309D4",
+        "TestStackLabs1WebhookApiGatewaywebhook0055C0CF",
       ],
       "Properties": Object {
         "Description": "Automatically created by the RestApi construct",
         "RestApiId": Object {
-          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+          "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
         },
       },
       "Type": "AWS::ApiGateway::Deployment",
     },
-    "TestStackWebhookApiGatewayDeploymentStageprodC7D48548": Object {
+    "TestStackLabs1WebhookApiGatewayDeploymentStageprodE39B5FA3": Object {
       "DependsOn": Array [
-        "TestStackWebhookApiGatewayAccount23C86CBC",
+        "TestStackLabs1WebhookApiGatewayAccount04B11408",
       ],
       "Properties": Object {
         "DeploymentId": Object {
-          "Ref": "TestStackWebhookApiGatewayDeployment0E355B0B382c729cb65b58ff5e81f7a450a59616",
+          "Ref": "TestStackLabs1WebhookApiGatewayDeploymentABD66C6832920a5562573cc22887d47d3981dd6a",
         },
         "RestApiId": Object {
-          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+          "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
         },
         "StageName": "prod",
       },
       "Type": "AWS::ApiGateway::Stage",
     },
-    "TestStackWebhookApiGatewaywebhook0F6F5657": Object {
+    "TestStackLabs1WebhookApiGatewaywebhook0055C0CF": Object {
       "Properties": Object {
         "ParentId": Object {
           "Fn::GetAtt": Array [
-            "TestStackWebhookApiGatewayC51D2EB5",
+            "TestStackLabs1WebhookApiGatewayA6F58624",
             "RootResourceId",
           ],
         },
         "PathPart": "webhook",
         "RestApiId": Object {
-          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+          "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "TestStackWebhookApiGatewaywebhookPOSTApiPermissionTestStackTestStackWebhookApiGateway1565C3E7POSTwebhookAA36E9D2": Object {
+    "TestStackLabs1WebhookApiGatewaywebhookPOSTApiPermissionTestStackTestStackLabs1WebhookApiGateway9CC2B97FPOSTwebhook82EDC0CE": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "WebhookLambda118EFE5D",
+            "WebhookLambdaLabs11705F660",
             "Arn",
           ],
         },
@@ -549,11 +793,11 @@ sudo shutdown -h now",
               },
               ":execute-api:eu-north-1:abc-123:",
               Object {
-                "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+                "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
               },
               "/",
               Object {
-                "Ref": "TestStackWebhookApiGatewayDeploymentStageprodC7D48548",
+                "Ref": "TestStackLabs1WebhookApiGatewayDeploymentStageprodE39B5FA3",
               },
               "/POST/webhook",
             ],
@@ -562,12 +806,12 @@ sudo shutdown -h now",
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "TestStackWebhookApiGatewaywebhookPOSTApiPermissionTestTestStackTestStackWebhookApiGateway1565C3E7POSTwebhook14412321": Object {
+    "TestStackLabs1WebhookApiGatewaywebhookPOSTApiPermissionTestTestStackTestStackLabs1WebhookApiGateway9CC2B97FPOSTwebhook4C60FD8B": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "WebhookLambda118EFE5D",
+            "WebhookLambdaLabs11705F660",
             "Arn",
           ],
         },
@@ -582,7 +826,7 @@ sudo shutdown -h now",
               },
               ":execute-api:eu-north-1:abc-123:",
               Object {
-                "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+                "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
               },
               "/test-invoke-stage/POST/webhook",
             ],
@@ -591,7 +835,7 @@ sudo shutdown -h now",
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "TestStackWebhookApiGatewaywebhookPOSTFABEA6E0": Object {
+    "TestStackLabs1WebhookApiGatewaywebhookPOSTDE6309D4": Object {
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "POST",
@@ -609,7 +853,7 @@ sudo shutdown -h now",
                 ":apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
-                    "WebhookLambda118EFE5D",
+                    "WebhookLambdaLabs11705F660",
                     "Arn",
                   ],
                 },
@@ -619,13 +863,205 @@ sudo shutdown -h now",
           },
         },
         "ResourceId": Object {
-          "Ref": "TestStackWebhookApiGatewaywebhook0F6F5657",
+          "Ref": "TestStackLabs1WebhookApiGatewaywebhook0055C0CF",
         },
         "RestApiId": Object {
-          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+          "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
         },
       },
       "Type": "AWS::ApiGateway::Method",
+    },
+    "TestStackLabs2WebhookApiGatewayAccount57AC1CB3": Object {
+      "DependsOn": Array [
+        "TestStackLabs2WebhookApiGatewayC409B712",
+      ],
+      "Properties": Object {
+        "CloudWatchRoleArn": Object {
+          "Fn::GetAtt": Array [
+            "TestStackLabs2WebhookApiGatewayCloudWatchRole14443CAF",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ApiGateway::Account",
+    },
+    "TestStackLabs2WebhookApiGatewayC409B712": Object {
+      "Properties": Object {
+        "Name": "TestStack/Labs2/WebhookApiGateway",
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "TestStackLabs2WebhookApiGatewayCloudWatchRole14443CAF": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "TestStackLabs2WebhookApiGatewayDeploymentE254F9FE10637674fa14a4afe23f79f0cf195571": Object {
+      "DependsOn": Array [
+        "TestStackLabs2WebhookApiGatewaywebhookPOST9282A8C6",
+        "TestStackLabs2WebhookApiGatewaywebhook6F2AC46C",
+      ],
+      "Properties": Object {
+        "Description": "Automatically created by the RestApi construct",
+        "RestApiId": Object {
+          "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
+        },
+      },
+      "Type": "AWS::ApiGateway::Deployment",
+    },
+    "TestStackLabs2WebhookApiGatewayDeploymentStageprodC4B84E28": Object {
+      "DependsOn": Array [
+        "TestStackLabs2WebhookApiGatewayAccount57AC1CB3",
+      ],
+      "Properties": Object {
+        "DeploymentId": Object {
+          "Ref": "TestStackLabs2WebhookApiGatewayDeploymentE254F9FE10637674fa14a4afe23f79f0cf195571",
+        },
+        "RestApiId": Object {
+          "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
+        },
+        "StageName": "prod",
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "TestStackLabs2WebhookApiGatewaywebhook6F2AC46C": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "TestStackLabs2WebhookApiGatewayC409B712",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "webhook",
+        "RestApiId": Object {
+          "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "TestStackLabs2WebhookApiGatewaywebhookPOST9282A8C6": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "POST",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "WebhookLambdaLabs2CCA9FEF1",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "TestStackLabs2WebhookApiGatewaywebhook6F2AC46C",
+        },
+        "RestApiId": Object {
+          "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "TestStackLabs2WebhookApiGatewaywebhookPOSTApiPermissionTestStackTestStackLabs2WebhookApiGateway407AD526POSTwebhookF95829F3": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "WebhookLambdaLabs2CCA9FEF1",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:eu-north-1:abc-123:",
+              Object {
+                "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
+              },
+              "/",
+              Object {
+                "Ref": "TestStackLabs2WebhookApiGatewayDeploymentStageprodC4B84E28",
+              },
+              "/POST/webhook",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "TestStackLabs2WebhookApiGatewaywebhookPOSTApiPermissionTestTestStackTestStackLabs2WebhookApiGateway407AD526POSTwebhook82F8F8C4": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "WebhookLambdaLabs2CCA9FEF1",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:eu-north-1:abc-123:",
+              Object {
+                "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
+              },
+              "/test-invoke-stage/POST/webhook",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "Vpc8378EB38": Object {
       "Properties": Object {
@@ -823,28 +1259,28 @@ sudo shutdown -h now",
       },
       "Type": "AWS::EC2::VPCGatewayAttachment",
     },
-    "WebhookLambda118EFE5D": Object {
+    "WebhookLambdaLabs11705F660": Object {
       "DependsOn": Array [
-        "WebhookLambdaServiceRoleDB3A5765",
+        "WebhookLambdaLabs1ServiceRole14ECDFC0",
       ],
       "Properties": Object {
         "Code": Object {
           "S3Bucket": "cdk-hnb659fds-assets-abc-123-eu-north-1",
-          "S3Key": "ee7b1c20240299475391eccd70c1da48a006e1aac150c934f16c007fecfd58ea.zip",
+          "S3Key": "19b87c9b73790c1c7db919d1f04433869850e3d427138109dd743142bc657444.zip",
         },
         "Environment": Object {
           "Variables": Object {
-            "context": "spt-mediaplatform-labs",
+            "scope": "spt-mediaplatform-labs",
             "spot": "true",
             "subnetId": Object {
               "Ref": "VpcTestStackSubnetPrivateSubnet1SubnetA3F474CA",
             },
             "templateId": Object {
-              "Ref": "LaunchTemplate04EC5460",
+              "Ref": "LaunchTemplateLabs1C57C2498",
             },
             "templateVersion": Object {
               "Fn::GetAtt": Array [
-                "LaunchTemplate04EC5460",
+                "LaunchTemplateLabs1C57C2498",
                 "LatestVersionNumber",
               ],
             },
@@ -855,7 +1291,7 @@ sudo shutdown -h now",
         "Handler": "handler.handler",
         "Role": Object {
           "Fn::GetAtt": Array [
-            "WebhookLambdaServiceRoleDB3A5765",
+            "WebhookLambdaLabs1ServiceRole14ECDFC0",
             "Arn",
           ],
         },
@@ -863,7 +1299,78 @@ sudo shutdown -h now",
       },
       "Type": "AWS::Lambda::Function",
     },
-    "WebhookLambdaServiceRoleDB3A5765": Object {
+    "WebhookLambdaLabs1ServiceRole14ECDFC0": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "WebhookLambdaLabs2CCA9FEF1": Object {
+      "DependsOn": Array [
+        "WebhookLambdaLabs2ServiceRoleCA8B2454",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": "cdk-hnb659fds-assets-abc-123-eu-north-1",
+          "S3Key": "19b87c9b73790c1c7db919d1f04433869850e3d427138109dd743142bc657444.zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "scope": "spt-mediaplatform-another-labs",
+            "spot": "false",
+            "subnetId": Object {
+              "Ref": "VpcTestStackSubnetPrivateSubnet1SubnetA3F474CA",
+            },
+            "templateId": Object {
+              "Ref": "LaunchTemplateLabs28C6D0996",
+            },
+            "templateVersion": Object {
+              "Fn::GetAtt": Array [
+                "LaunchTemplateLabs28C6D0996",
+                "LatestVersionNumber",
+              ],
+            },
+            "webhookSecretSsmArn": "arn:aws:ssm:eu-north-1:abc-123:parameter/github/webhook/another-secret",
+            "webhookSecretSsmPath": "/github/webhook/another-secret",
+          },
+        },
+        "Handler": "handler.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "WebhookLambdaLabs2ServiceRoleCA8B2454",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "WebhookLambdaLabs2ServiceRoleCA8B2454": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [

@@ -23,13 +23,9 @@ import {
 } from 'aws-cdk-lib/aws-imagebuilder';
 import { readFileSync } from 'fs';
 import path from 'path';
-import { GithubActionsRunnersProps } from '../types';
+import { GithubActionsRunnersProps, Context } from '../types';
 
-export const setupVMRunners = (
-  stack: Stack,
-  props: GithubActionsRunnersProps,
-  securityGroup: ISecurityGroup,
-) => {
+export const buildImage = (stack: Stack, props: GithubActionsRunnersProps) => {
   const region = props.env?.region!;
 
   const component = new CfnComponent(stack, 'GithubActionsRunnerComponent', {
@@ -95,26 +91,39 @@ export const setupVMRunners = (
     infrastructureConfigurationArn: infraConfig.attrArn,
   });
 
+  return {
+    imageId: ami.attrImageId,
+  };
+};
+
+export const setupRunners = (
+  stack: Stack,
+  props: GithubActionsRunnersProps,
+  context: Context,
+  securityGroup: ISecurityGroup,
+  imageId: string,
+) => {
+  const region = props.env?.region!;
   const userDataScript = readFileSync(
     path.resolve(__dirname, './entrypoint.sh'),
     'utf8',
   )
     .replace('$AWS_REGION', region)
-    .replace('$GH_TOKEN_SSM_PATH', props.tokenSsmPath)
-    .replace('$RUNNER_CONTEXT', props.context)
-    .replace('$RUNNER_GROUP', props.runnerGroup ?? 'default')
-    .replace('$RUNNER_TIMEOUT', props.runnerTimeout ?? '60m');
-  const template = new LaunchTemplate(stack, 'LaunchTemplate', {
-    launchTemplateName: stack.artifactId,
+    .replace('$GH_TOKEN_SSM_PATH', context.tokenSsmPath)
+    .replace('$RUNNER_SCOPE', context.scope)
+    .replace('$RUNNER_GROUP', context.group ?? 'default')
+    .replace('$RUNNER_TIMEOUT', context.timeout ?? '60m');
+  const template = new LaunchTemplate(stack, `LaunchTemplate/${context.name}`, {
+    launchTemplateName: `${stack.artifactId}/${context.name}`,
     userData: UserData.custom(userDataScript),
     instanceType: new InstanceType('t3.micro'),
     machineImage: MachineImage.genericLinux({
-      [region]: ami.attrImageId,
+      [region]: imageId,
     }),
     instanceInitiatedShutdownBehavior:
       InstanceInitiatedShutdownBehavior.TERMINATE,
     securityGroup,
-    role: new Role(stack, 'RunnerRole', {
+    role: new Role(stack, `RunnerRole${context.name}`, {
       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       inlinePolicies: {
         'ssm-policy': new PolicyDocument({

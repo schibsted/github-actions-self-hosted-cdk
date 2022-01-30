@@ -8,7 +8,7 @@ import {
 } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { GithubActionsRunnersProps } from './types';
-import { setupVMRunners } from './vm';
+import { buildImage, setupRunners } from './vm';
 import { setupWekhook } from './webhook';
 
 export class GithubActionsRunners extends Stack {
@@ -22,7 +22,7 @@ export class GithubActionsRunners extends Stack {
       },
     ];
 
-    if (props.private) {
+    if (props.privateSubnets) {
       subnetConfiguration.push({
         name: `${id}/Subnet/Private`,
         subnetType: SubnetType.PRIVATE_WITH_NAT,
@@ -40,28 +40,30 @@ export class GithubActionsRunners extends Stack {
       allowAllOutbound: true,
       securityGroupName: `${id}/Vpc`,
     });
-    securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
 
-    if (props.vm?.enableEc2InstanceConnect) {
+    if (props.debugMode) {
       securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
     }
 
     const subnetId = (
-      props.private ? vpc.privateSubnets : vpc.publicSubnets
+      props.privateSubnets ? vpc.privateSubnets : vpc.publicSubnets
     ).map(x => x.subnetId)[0];
 
-    const vm = setupVMRunners(this, props, securityGroup);
-    const webhook = setupWekhook(this, {
-      ...vm,
-      subnetId,
-      context: props.context,
-      spot: (props.spot ?? true).toString(),
-      webhookSecretSsmPath: props.webhookSecretSsmPath,
-      webhookSecretSsmArn: `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter${props.webhookSecretSsmPath}`,
-    });
+    const { imageId } = buildImage(this, props);
+    props.contexts?.forEach(context => {
+      const vm = setupRunners(this, props, context, securityGroup, imageId);
+      const webhook = setupWekhook(this, context, {
+        ...vm,
+        subnetId,
+        scope: context.scope,
+        spot: (context.spot ?? true).toString(),
+        webhookSecretSsmPath: context.webhookSecretSsmPath,
+        webhookSecretSsmArn: `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter${context.webhookSecretSsmPath}`,
+      });
 
-    new CfnOutput(this, 'WebhookEndpoint', {
-      value: `${webhook.url}webhook`,
+      new CfnOutput(this, `WebhookEndpoint-${context.name}`, {
+        value: `${webhook.url}webhook`,
+      });
     });
   }
 }

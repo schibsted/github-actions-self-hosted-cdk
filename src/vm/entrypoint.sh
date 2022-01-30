@@ -3,7 +3,7 @@
 AWS_REGION=$AWS_REGION
 AWS_INSTANCE_TYPE=$(curl http://169.254.169.254/latest/meta-data/instance-type)
 GH_TOKEN_SSM_PATH=$GH_TOKEN_SSM_PATH
-RUNNER_CONTEXT=$RUNNER_CONTEXT
+RUNNER_SCOPE=$RUNNER_SCOPE
 RUNNER_TIMEOUT=$RUNNER_TIMEOUT
 RUNNER_GROUP=$RUNNER_GROUP
 
@@ -19,8 +19,8 @@ deregister_runner() {
 init() {
   GITHUB_TOKEN=$(aws ssm get-parameters --name ${GH_TOKEN_SSM_PATH} --region ${AWS_REGION} --with-decryption | jq -r .Parameters[0].Value)
   AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
-  ORG=$(cut -d/ -f1 <<< ${RUNNER_CONTEXT})
-  REPO=$(cut -d/ -f2 <<< ${RUNNER_CONTEXT})
+  ORG=$(cut -d/ -f1 <<< ${RUNNER_SCOPE})
+  REPO=$(cut -d/ -f2 <<< ${RUNNER_SCOPE})
 
   if [[ -z "${REPOSITORY}" ]]; then
     TOKEN_REGISTRATION_URL="https://github.schibsted.io/api/v3/orgs/${ORG}/actions/runners/registration-token"
@@ -36,7 +36,7 @@ init() {
 }
 
 configure() {
-  sudo -u ubuntu ./config.sh --url "https://github.schibsted.io/${RUNNER_CONTEXT}" \
+  sudo -u ubuntu ./config.sh --url "https://github.schibsted.io/${RUNNER_SCOPE}" \
     --token "${RUNNER_TOKEN}" \
     --labels "vm:${AWS_INSTANCE_TYPE}" \
     --work "${RUNNER_WORKDIR}" \
