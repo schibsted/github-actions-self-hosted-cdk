@@ -40,7 +40,6 @@ export class GithubActionsRunners extends Stack {
       allowAllOutbound: true,
       securityGroupName: `${id}/Vpc`,
     });
-    securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
 
     if (props.vm?.enableEc2InstanceConnect) {
       securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
