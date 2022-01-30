@@ -39,7 +39,7 @@ const verifySignature = async event => {
   return sig.length === digest.length && crypto.timingSafeEqual(digest, sig);
 };
 
-const supportedRepo = repo => repo.includes(process.env.context);
+const supportedRepo = repo => repo.includes(process.env.scope);
 
 const handler = async event => {
   try {

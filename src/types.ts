@@ -3,7 +3,7 @@ import { StackProps } from 'aws-cdk-lib';
 export interface WebhookEnvironment {
   templateId: string;
   templateVersion: string;
-  context: string;
+  scope: string;
   subnetId: string;
   spot: string;
   webhookSecretSsmPath: string;

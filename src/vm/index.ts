@@ -110,11 +110,11 @@ export const setupRunners = (
   )
     .replace('$AWS_REGION', region)
     .replace('$GH_TOKEN_SSM_PATH', props.tokenSsmPath)
-    .replace('$RUNNER_CONTEXT', context.scope)
+    .replace('$RUNNER_SCOPE', context.scope)
     .replace('$RUNNER_GROUP', context.group ?? 'default')
     .replace('$RUNNER_TIMEOUT', context.timeout ?? '60m');
   const template = new LaunchTemplate(stack, `LaunchTemplate/${context.name}`, {
-    launchTemplateName: `stack.artifactId/${context.name}`,
+    launchTemplateName: `${stack.artifactId}/${context.name}`,
     userData: UserData.custom(userDataScript),
     instanceType: new InstanceType('t3.micro'),
     machineImage: MachineImage.genericLinux({

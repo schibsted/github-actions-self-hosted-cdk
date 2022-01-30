@@ -55,7 +55,7 @@ export class GithubActionsRunners extends Stack {
       const webhook = setupWekhook(this, context, {
         ...vm,
         subnetId,
-        context: context.scope,
+        scope: context.scope,
         spot: (context.spot ?? true).toString(),
         webhookSecretSsmPath: context.webhookSecretSsmPath,
         webhookSecretSsmArn: `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter${context.webhookSecretSsmPath}`,
