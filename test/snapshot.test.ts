@@ -8,13 +8,24 @@ test('Snapshot test', () => {
       account: 'abc-123',
       region: 'eu-north-1',
     },
-    vm: {
-      enableEc2InstanceConnect: true,
-    },
-    context: 'spt-mediaplatform-labs',
-    tokenSsmPath: '/github/actions/token',
-    webhookSecretSsmPath: '/github/webhook/secret',
     private: true,
+    tokenSsmPath: '/github/actions/token',
+    contexts: [
+      {
+        name: 'Labs1',
+        scope: 'spt-mediaplatform-labs',
+        spot: true,
+        webhookSecretSsmPath: '/github/webhook/secret',
+        timeout: '10m',
+      },
+      {
+        name: 'Labs2',
+        scope: 'spt-mediaplatform-another-labs',
+        spot: false,
+        webhookSecretSsmPath: '/github/webhook/another-secret',
+        timeout: '30m',
+      },
+    ],
   });
   expect(Template.fromStack(stack).toJSON()).toMatchSnapshot();
 });
