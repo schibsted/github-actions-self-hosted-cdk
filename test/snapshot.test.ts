@@ -9,13 +9,13 @@ test('Snapshot test', () => {
       region: 'eu-north-1',
     },
     private: true,
-    tokenSsmPath: '/github/actions/token',
     contexts: [
       {
         name: 'Labs1',
         scope: 'spt-mediaplatform-labs',
         spot: true,
         webhookSecretSsmPath: '/github/webhook/secret',
+        tokenSsmPath: '/github/actions/token',
         timeout: '10m',
       },
       {
@@ -23,6 +23,7 @@ test('Snapshot test', () => {
         scope: 'spt-mediaplatform-another-labs',
         spot: false,
         webhookSecretSsmPath: '/github/webhook/another-secret',
+        tokenSsmPath: '/github/actions/token',
         timeout: '30m',
       },
     ],

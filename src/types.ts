@@ -13,14 +13,14 @@ export interface WebhookEnvironment {
 export interface Context {
   name: string;
   scope: string;
+  webhookSecretSsmPath: string;
+  tokenSsmPath: string;
   group?: string;
   timeout?: string;
   spot?: boolean;
-  webhookSecretSsmPath: string;
 }
 
 export interface GithubActionsRunnersProps extends StackProps {
-  tokenSsmPath: string;
   runnerVersion?: string;
   debugMode?: boolean;
   private?: boolean;

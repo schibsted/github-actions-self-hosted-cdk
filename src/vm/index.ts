@@ -109,7 +109,7 @@ export const setupRunners = (
     'utf8',
   )
     .replace('$AWS_REGION', region)
-    .replace('$GH_TOKEN_SSM_PATH', props.tokenSsmPath)
+    .replace('$GH_TOKEN_SSM_PATH', context.tokenSsmPath)
     .replace('$RUNNER_SCOPE', context.scope)
     .replace('$RUNNER_GROUP', context.group ?? 'default')
     .replace('$RUNNER_TIMEOUT', context.timeout ?? '60m');
