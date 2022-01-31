@@ -1180,7 +1180,7 @@ sudo shutdown -h now",
       "Properties": Object {
         "Code": Object {
           "S3Bucket": "cdk-hnb659fds-assets-abc-123-eu-north-1",
-          "S3Key": "c5a7564ae076f41b2a5dafb24bcff865b185c059c8aba0de7d8e9ffa1032c776.zip",
+          "S3Key": "cdf441ee68e3b0805fd6e37d57f55fa7704bef0263e65ee55b478b48153e67de.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -1251,7 +1251,7 @@ sudo shutdown -h now",
       "Properties": Object {
         "Code": Object {
           "S3Bucket": "cdk-hnb659fds-assets-abc-123-eu-north-1",
-          "S3Key": "c5a7564ae076f41b2a5dafb24bcff865b185c059c8aba0de7d8e9ffa1032c776.zip",
+          "S3Key": "cdf441ee68e3b0805fd6e37d57f55fa7704bef0263e65ee55b478b48153e67de.zip",
         },
         "Environment": Object {
           "Variables": Object {
