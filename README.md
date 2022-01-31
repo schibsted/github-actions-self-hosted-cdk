@@ -63,14 +63,14 @@ Something like this in `.npmrc` should do the trick:
 
 ## :ribbon: Example project
 
-#### Head over to :point_right: [`spp/demo-github-actions-runners`](https://github.schibsted.io/spp/demo-github-actions-runners) :point_left: for a real life demo app that is based on this CDK construct.
+#### Head over to :point_right: [`spp/github-actions-config`](https://github.schibsted.io/spp/github-actions-config) :point_left: for a real life demo app that is based on this CDK construct.
 
 ##### `package.json`
 
 ```json
 {
   "dependencies": {
-    "@spp/github-actions-self-hosted": "^0.8.0",
+    "@spp/github-actions-self-hosted": "^0.9.2",
     "aws-cdk-lib": "^2.3.0"
   }
 }
