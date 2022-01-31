@@ -20,10 +20,10 @@ test('Snapshot test', () => {
       },
       {
         name: 'Labs2',
-        scope: 'spt-mediaplatform-another-labs',
+        scope: 'spt-mediaplatform-another-labs/my-repo',
         spot: false,
         webhookSecretSsmPath: '/github/webhook/another-secret',
-        tokenSsmPath: '/github/actions/token',
+        tokenSsmPath: '/github/actions/another-token',
         timeout: '30m',
       },
     ],

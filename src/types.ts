@@ -10,6 +10,11 @@ export interface WebhookEnvironment {
   webhookSecretSsmArn: string;
 }
 
+export interface Domain {
+  name: string;
+  hostedZoneDomain: string;
+}
+
 export interface Context {
   name: string;
   scope: string;
@@ -25,4 +30,5 @@ export interface GithubActionsRunnersProps extends StackProps {
   debugMode?: boolean;
   privateSubnets?: boolean;
   contexts?: Context[];
+  domain?: Domain;
 }

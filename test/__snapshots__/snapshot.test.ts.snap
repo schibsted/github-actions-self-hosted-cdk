@@ -3,14 +3,14 @@
 exports[`Snapshot test 1`] = `
 Object {
   "Outputs": Object {
-    "TestStackLabs1WebhookApiGatewayEndpoint8DA36E91": Object {
+    "TestStackWebhookApiGatewayEndpointD6484201": Object {
       "Value": Object {
         "Fn::Join": Array [
           "",
           Array [
             "https://",
             Object {
-              "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
+              "Ref": "TestStackWebhookApiGatewayC51D2EB5",
             },
             ".execute-api.eu-north-1.",
             Object {
@@ -18,29 +18,7 @@ Object {
             },
             "/",
             Object {
-              "Ref": "TestStackLabs1WebhookApiGatewayDeploymentStageprodE39B5FA3",
-            },
-            "/",
-          ],
-        ],
-      },
-    },
-    "TestStackLabs2WebhookApiGatewayEndpointB19A44B4": Object {
-      "Value": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "https://",
-            Object {
-              "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
-            },
-            ".execute-api.eu-north-1.",
-            Object {
-              "Ref": "AWS::URLSuffix",
-            },
-            "/",
-            Object {
-              "Ref": "TestStackLabs2WebhookApiGatewayDeploymentStageprodC4B84E28",
+              "Ref": "TestStackWebhookApiGatewayDeploymentStageprodC7D48548",
             },
             "/",
           ],
@@ -54,7 +32,7 @@ Object {
           Array [
             "https://",
             Object {
-              "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
+              "Ref": "TestStackWebhookApiGatewayC51D2EB5",
             },
             ".execute-api.eu-north-1.",
             Object {
@@ -62,9 +40,9 @@ Object {
             },
             "/",
             Object {
-              "Ref": "TestStackLabs1WebhookApiGatewayDeploymentStageprodE39B5FA3",
+              "Ref": "TestStackWebhookApiGatewayDeploymentStageprodC7D48548",
             },
-            "/webhook",
+            "/spt-mediaplatform-labs",
           ],
         ],
       },
@@ -76,7 +54,7 @@ Object {
           Array [
             "https://",
             Object {
-              "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
+              "Ref": "TestStackWebhookApiGatewayC51D2EB5",
             },
             ".execute-api.eu-north-1.",
             Object {
@@ -84,9 +62,9 @@ Object {
             },
             "/",
             Object {
-              "Ref": "TestStackLabs2WebhookApiGatewayDeploymentStageprodC4B84E28",
+              "Ref": "TestStackWebhookApiGatewayDeploymentStageprodC7D48548",
             },
-            "/webhook",
+            "/spt-mediaplatform-another-labs/my-repo",
           ],
         ],
       },
@@ -490,8 +468,8 @@ sudo shutdown -h now",
 
 AWS_REGION=eu-north-1
 AWS_INSTANCE_TYPE=$(curl http://169.254.169.254/latest/meta-data/instance-type)
-GH_TOKEN_SSM_PATH=/github/actions/token
-RUNNER_SCOPE=spt-mediaplatform-another-labs
+GH_TOKEN_SSM_PATH=/github/actions/another-token
+RUNNER_SCOPE=spt-mediaplatform-another-labs/my-repo
 RUNNER_TIMEOUT=30m
 RUNNER_GROUP=default
 
@@ -679,27 +657,27 @@ sudo shutdown -h now",
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "TestStackLabs1WebhookApiGatewayA6F58624": Object {
-      "Properties": Object {
-        "Name": "TestStack/Labs1/WebhookApiGateway",
-      },
-      "Type": "AWS::ApiGateway::RestApi",
-    },
-    "TestStackLabs1WebhookApiGatewayAccount04B11408": Object {
+    "TestStackWebhookApiGatewayAccount23C86CBC": Object {
       "DependsOn": Array [
-        "TestStackLabs1WebhookApiGatewayA6F58624",
+        "TestStackWebhookApiGatewayC51D2EB5",
       ],
       "Properties": Object {
         "CloudWatchRoleArn": Object {
           "Fn::GetAtt": Array [
-            "TestStackLabs1WebhookApiGatewayCloudWatchRole9B570398",
+            "TestStackWebhookApiGatewayCloudWatchRole449AD6F9",
             "Arn",
           ],
         },
       },
       "Type": "AWS::ApiGateway::Account",
     },
-    "TestStackLabs1WebhookApiGatewayCloudWatchRole9B570398": Object {
+    "TestStackWebhookApiGatewayC51D2EB5": Object {
+      "Properties": Object {
+        "Name": "TestStack/WebhookApiGateway",
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "TestStackWebhookApiGatewayCloudWatchRole449AD6F9": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -730,55 +708,70 @@ sudo shutdown -h now",
       },
       "Type": "AWS::IAM::Role",
     },
-    "TestStackLabs1WebhookApiGatewayDeploymentABD66C6832920a5562573cc22887d47d3981dd6a": Object {
+    "TestStackWebhookApiGatewayDeployment0E355B0Bde78ba1904ce65ea48e37f45a85f4e2e": Object {
       "DependsOn": Array [
-        "TestStackLabs1WebhookApiGatewaywebhookPOSTDE6309D4",
-        "TestStackLabs1WebhookApiGatewaywebhook0055C0CF",
+        "TestStackWebhookApiGatewaysptmediaplatformanotherlabsmyrepoPOSTBA4E0407",
+        "TestStackWebhookApiGatewaysptmediaplatformanotherlabsmyrepo93823E79",
+        "TestStackWebhookApiGatewaysptmediaplatformanotherlabs8B91ED6C",
+        "TestStackWebhookApiGatewaysptmediaplatformlabsPOST36FA3328",
+        "TestStackWebhookApiGatewaysptmediaplatformlabs450900CA",
       ],
       "Properties": Object {
         "Description": "Automatically created by the RestApi construct",
         "RestApiId": Object {
-          "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
+          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
         },
       },
       "Type": "AWS::ApiGateway::Deployment",
     },
-    "TestStackLabs1WebhookApiGatewayDeploymentStageprodE39B5FA3": Object {
+    "TestStackWebhookApiGatewayDeploymentStageprodC7D48548": Object {
       "DependsOn": Array [
-        "TestStackLabs1WebhookApiGatewayAccount04B11408",
+        "TestStackWebhookApiGatewayAccount23C86CBC",
       ],
       "Properties": Object {
         "DeploymentId": Object {
-          "Ref": "TestStackLabs1WebhookApiGatewayDeploymentABD66C6832920a5562573cc22887d47d3981dd6a",
+          "Ref": "TestStackWebhookApiGatewayDeployment0E355B0Bde78ba1904ce65ea48e37f45a85f4e2e",
         },
         "RestApiId": Object {
-          "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
+          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
         },
         "StageName": "prod",
       },
       "Type": "AWS::ApiGateway::Stage",
     },
-    "TestStackLabs1WebhookApiGatewaywebhook0055C0CF": Object {
+    "TestStackWebhookApiGatewaysptmediaplatformanotherlabs8B91ED6C": Object {
       "Properties": Object {
         "ParentId": Object {
           "Fn::GetAtt": Array [
-            "TestStackLabs1WebhookApiGatewayA6F58624",
+            "TestStackWebhookApiGatewayC51D2EB5",
             "RootResourceId",
           ],
         },
-        "PathPart": "webhook",
+        "PathPart": "spt-mediaplatform-another-labs",
         "RestApiId": Object {
-          "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
+          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "TestStackLabs1WebhookApiGatewaywebhookPOSTApiPermissionTestStackTestStackLabs1WebhookApiGateway9CC2B97FPOSTwebhook82EDC0CE": Object {
+    "TestStackWebhookApiGatewaysptmediaplatformanotherlabsmyrepo93823E79": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "TestStackWebhookApiGatewaysptmediaplatformanotherlabs8B91ED6C",
+        },
+        "PathPart": "my-repo",
+        "RestApiId": Object {
+          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "TestStackWebhookApiGatewaysptmediaplatformanotherlabsmyrepoPOSTApiPermissionTestStackTestStackWebhookApiGateway1565C3E7POSTsptmediaplatformanotherlabsmyrepoE86FFED1": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "WebhookLambdaLabs11705F660",
+            "WebhookLambdaLabs2CCA9FEF1",
             "Arn",
           ],
         },
@@ -793,25 +786,25 @@ sudo shutdown -h now",
               },
               ":execute-api:eu-north-1:abc-123:",
               Object {
-                "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
+                "Ref": "TestStackWebhookApiGatewayC51D2EB5",
               },
               "/",
               Object {
-                "Ref": "TestStackLabs1WebhookApiGatewayDeploymentStageprodE39B5FA3",
+                "Ref": "TestStackWebhookApiGatewayDeploymentStageprodC7D48548",
               },
-              "/POST/webhook",
+              "/POST/spt-mediaplatform-another-labs/my-repo",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "TestStackLabs1WebhookApiGatewaywebhookPOSTApiPermissionTestTestStackTestStackLabs1WebhookApiGateway9CC2B97FPOSTwebhook4C60FD8B": Object {
+    "TestStackWebhookApiGatewaysptmediaplatformanotherlabsmyrepoPOSTApiPermissionTestTestStackTestStackWebhookApiGateway1565C3E7POSTsptmediaplatformanotherlabsmyrepo8B0FD924": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "WebhookLambdaLabs11705F660",
+            "WebhookLambdaLabs2CCA9FEF1",
             "Arn",
           ],
         },
@@ -826,146 +819,16 @@ sudo shutdown -h now",
               },
               ":execute-api:eu-north-1:abc-123:",
               Object {
-                "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
+                "Ref": "TestStackWebhookApiGatewayC51D2EB5",
               },
-              "/test-invoke-stage/POST/webhook",
+              "/test-invoke-stage/POST/spt-mediaplatform-another-labs/my-repo",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "TestStackLabs1WebhookApiGatewaywebhookPOSTDE6309D4": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "POST",
-        "Integration": Object {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
-                    "WebhookLambdaLabs11705F660",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": Object {
-          "Ref": "TestStackLabs1WebhookApiGatewaywebhook0055C0CF",
-        },
-        "RestApiId": Object {
-          "Ref": "TestStackLabs1WebhookApiGatewayA6F58624",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "TestStackLabs2WebhookApiGatewayAccount57AC1CB3": Object {
-      "DependsOn": Array [
-        "TestStackLabs2WebhookApiGatewayC409B712",
-      ],
-      "Properties": Object {
-        "CloudWatchRoleArn": Object {
-          "Fn::GetAtt": Array [
-            "TestStackLabs2WebhookApiGatewayCloudWatchRole14443CAF",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "AWS::ApiGateway::Account",
-    },
-    "TestStackLabs2WebhookApiGatewayC409B712": Object {
-      "Properties": Object {
-        "Name": "TestStack/Labs2/WebhookApiGateway",
-      },
-      "Type": "AWS::ApiGateway::RestApi",
-    },
-    "TestStackLabs2WebhookApiGatewayCloudWatchRole14443CAF": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "apigateway.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "TestStackLabs2WebhookApiGatewayDeploymentE254F9FE10637674fa14a4afe23f79f0cf195571": Object {
-      "DependsOn": Array [
-        "TestStackLabs2WebhookApiGatewaywebhookPOST9282A8C6",
-        "TestStackLabs2WebhookApiGatewaywebhook6F2AC46C",
-      ],
-      "Properties": Object {
-        "Description": "Automatically created by the RestApi construct",
-        "RestApiId": Object {
-          "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
-        },
-      },
-      "Type": "AWS::ApiGateway::Deployment",
-    },
-    "TestStackLabs2WebhookApiGatewayDeploymentStageprodC4B84E28": Object {
-      "DependsOn": Array [
-        "TestStackLabs2WebhookApiGatewayAccount57AC1CB3",
-      ],
-      "Properties": Object {
-        "DeploymentId": Object {
-          "Ref": "TestStackLabs2WebhookApiGatewayDeploymentE254F9FE10637674fa14a4afe23f79f0cf195571",
-        },
-        "RestApiId": Object {
-          "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
-        },
-        "StageName": "prod",
-      },
-      "Type": "AWS::ApiGateway::Stage",
-    },
-    "TestStackLabs2WebhookApiGatewaywebhook6F2AC46C": Object {
-      "Properties": Object {
-        "ParentId": Object {
-          "Fn::GetAtt": Array [
-            "TestStackLabs2WebhookApiGatewayC409B712",
-            "RootResourceId",
-          ],
-        },
-        "PathPart": "webhook",
-        "RestApiId": Object {
-          "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "TestStackLabs2WebhookApiGatewaywebhookPOST9282A8C6": Object {
+    "TestStackWebhookApiGatewaysptmediaplatformanotherlabsmyrepoPOSTBA4E0407": Object {
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "POST",
@@ -993,20 +856,71 @@ sudo shutdown -h now",
           },
         },
         "ResourceId": Object {
-          "Ref": "TestStackLabs2WebhookApiGatewaywebhook6F2AC46C",
+          "Ref": "TestStackWebhookApiGatewaysptmediaplatformanotherlabsmyrepo93823E79",
         },
         "RestApiId": Object {
-          "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
+          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
         },
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "TestStackLabs2WebhookApiGatewaywebhookPOSTApiPermissionTestStackTestStackLabs2WebhookApiGateway407AD526POSTwebhookF95829F3": Object {
+    "TestStackWebhookApiGatewaysptmediaplatformlabs450900CA": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "TestStackWebhookApiGatewayC51D2EB5",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "spt-mediaplatform-labs",
+        "RestApiId": Object {
+          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "TestStackWebhookApiGatewaysptmediaplatformlabsPOST36FA3328": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "POST",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "WebhookLambdaLabs11705F660",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "TestStackWebhookApiGatewaysptmediaplatformlabs450900CA",
+        },
+        "RestApiId": Object {
+          "Ref": "TestStackWebhookApiGatewayC51D2EB5",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "TestStackWebhookApiGatewaysptmediaplatformlabsPOSTApiPermissionTestStackTestStackWebhookApiGateway1565C3E7POSTsptmediaplatformlabs02B06F23": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "WebhookLambdaLabs2CCA9FEF1",
+            "WebhookLambdaLabs11705F660",
             "Arn",
           ],
         },
@@ -1021,25 +935,25 @@ sudo shutdown -h now",
               },
               ":execute-api:eu-north-1:abc-123:",
               Object {
-                "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
+                "Ref": "TestStackWebhookApiGatewayC51D2EB5",
               },
               "/",
               Object {
-                "Ref": "TestStackLabs2WebhookApiGatewayDeploymentStageprodC4B84E28",
+                "Ref": "TestStackWebhookApiGatewayDeploymentStageprodC7D48548",
               },
-              "/POST/webhook",
+              "/POST/spt-mediaplatform-labs",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "TestStackLabs2WebhookApiGatewaywebhookPOSTApiPermissionTestTestStackTestStackLabs2WebhookApiGateway407AD526POSTwebhook82F8F8C4": Object {
+    "TestStackWebhookApiGatewaysptmediaplatformlabsPOSTApiPermissionTestTestStackTestStackWebhookApiGateway1565C3E7POSTsptmediaplatformlabs4479F617": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "WebhookLambdaLabs2CCA9FEF1",
+            "WebhookLambdaLabs11705F660",
             "Arn",
           ],
         },
@@ -1054,9 +968,9 @@ sudo shutdown -h now",
               },
               ":execute-api:eu-north-1:abc-123:",
               Object {
-                "Ref": "TestStackLabs2WebhookApiGatewayC409B712",
+                "Ref": "TestStackWebhookApiGatewayC51D2EB5",
               },
-              "/test-invoke-stage/POST/webhook",
+              "/test-invoke-stage/POST/spt-mediaplatform-labs",
             ],
           ],
         },
@@ -1266,7 +1180,7 @@ sudo shutdown -h now",
       "Properties": Object {
         "Code": Object {
           "S3Bucket": "cdk-hnb659fds-assets-abc-123-eu-north-1",
-          "S3Key": "19b87c9b73790c1c7db919d1f04433869850e3d427138109dd743142bc657444.zip",
+          "S3Key": "cdf441ee68e3b0805fd6e37d57f55fa7704bef0263e65ee55b478b48153e67de.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -1337,11 +1251,11 @@ sudo shutdown -h now",
       "Properties": Object {
         "Code": Object {
           "S3Bucket": "cdk-hnb659fds-assets-abc-123-eu-north-1",
-          "S3Key": "19b87c9b73790c1c7db919d1f04433869850e3d427138109dd743142bc657444.zip",
+          "S3Key": "cdf441ee68e3b0805fd6e37d57f55fa7704bef0263e65ee55b478b48153e67de.zip",
         },
         "Environment": Object {
           "Variables": Object {
-            "scope": "spt-mediaplatform-another-labs",
+            "scope": "spt-mediaplatform-another-labs/my-repo",
             "spot": "false",
             "subnetId": Object {
               "Ref": "VpcTestStackSubnetPrivateSubnet1SubnetA3F474CA",
