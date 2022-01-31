@@ -51,7 +51,7 @@ export const buildImage = (stack: Stack, props: GithubActionsRunnersProps) => {
         parameters: [
           {
             name: 'RunnerVersion',
-            value: ['2.286.0'],
+            value: [props.runnerVersion ?? '2.286.0'],
           },
         ],
       },
