@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.9.1] - 2022-01-31
+
+### Added
+
+- Added support for custom webhook domains
+
 ## [0.9.0] - 2022-01-30
 
 ### Added
