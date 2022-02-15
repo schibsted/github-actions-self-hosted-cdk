@@ -32,7 +32,7 @@ It has been designed to be:
 
 This NPM package is published to Github Packages in our Github Enterprise installation.
 
-See https://github.com/schibsted/github-actions-self-hosted-cdk/packages/1
+See https://github.com/schibsted/github-actions-self-hosted-cdk/packages/1254444
 
 Something like this in `.npmrc` should do the trick:
 
