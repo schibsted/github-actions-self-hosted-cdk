@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.9.3] - 2022-02-15
+
+### Changed
+
+- Made it possible to configure Github host
+
 ## [0.9.2] - 2022-01-31
 
 ### Changed

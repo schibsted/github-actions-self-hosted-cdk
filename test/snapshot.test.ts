@@ -9,6 +9,7 @@ test('Snapshot test', () => {
       region: 'eu-north-1',
     },
     privateSubnets: true,
+    githubHost: 'github.example.com',
     contexts: [
       {
         name: 'Labs1',
