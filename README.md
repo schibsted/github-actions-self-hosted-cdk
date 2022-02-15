@@ -51,7 +51,7 @@ Something like this in `.npmrc` should do the trick:
 
 ### Ship it!
 
-1. Create a CDK project using the `@schibsted/github-actions-self-hosted` construct (example below).
+1. Create a CDK project using the `@schibsted/github-actions-self-hosted-cdk` construct (example below).
 2. `cdk deploy`
 3. Wait for it... Profit! _(it'll take quite some time on the first deploy)_.
 4. The deploy command will output a webhook endpoint, called something like `NameOfStack.WebhookEndpoint`.
@@ -68,7 +68,7 @@ Something like this in `.npmrc` should do the trick:
 ```json
 {
   "dependencies": {
-    "@schibsted/github-actions-self-hosted": "^0.9.3",
+    "@schibsted/github-actions-self-hosted-cdk": "^0.9.3",
     "aws-cdk-lib": "^2.3.0"
   }
 }
@@ -79,7 +79,7 @@ Something like this in `.npmrc` should do the trick:
 ```js
 #!/usr/bin/env node
 import { App } from 'aws-cdk-lib';
-import { GithubActionsRunners } from '@schibsted/github-actions-self-hosted';
+import { GithubActionsRunners } from '@schibsted/github-actions-self-hosted-cdk';
 
 const app = new App();
 new GithubActionsRunners(app, 'MyRunners', {
