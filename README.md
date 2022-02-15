@@ -26,19 +26,19 @@ It has been designed to be:
 
 ## :art: Solution architecture
 
-<a href="https://docs.google.com/drawings/d/1F1ofp86HjaqzCBt2ybKB5ZfXE-AqhX9pdiGPl_f2FE8/edit"><img src="https://docs.google.com/drawings/d/e/2PACX-1vQGyC_Wfy--Lf8Qdk1xkgW2fZrRG-vjAXM3ZcLPcdEI4TtG6BjwQ4gM3qVNTESbhbgTFAdSi8ZTK7Px/pub?w=1570&amp;h=673"></a>
+<img src="https://docs.google.com/drawings/d/e/2PACX-1vQGyC_Wfy--Lf8Qdk1xkgW2fZrRG-vjAXM3ZcLPcdEI4TtG6BjwQ4gM3qVNTESbhbgTFAdSi8ZTK7Px/pub?w=1570&amp;h=673">
 
 ## Package distribution
 
 This NPM package is published to Github Packages in our Github Enterprise installation.
 
-See https://github.schibsted.io/spp/github-actions-self-hosted/packages/52
+See https://github.com/schibsted/github-actions-self-hosted-cdk/packages/1
 
 Something like this in `.npmrc` should do the trick:
 
 ```
-//npm.github.schibsted.io/:_authToken=${GITHUB_TOKEN}
-@spp:registry=https://npm.github.schibsted.io
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+@schibsted:registry=https://npm.pkg.github.com
 ```
 
 ## :traffic_light: Getting started
@@ -51,26 +51,24 @@ Something like this in `.npmrc` should do the trick:
 
 ### Ship it!
 
-1. Create a CDK project using the `@spp/github-actions-self-hosted` construct (example below).
+1. Create a CDK project using the `@schibsted/github-actions-self-hosted` construct (example below).
 2. `cdk deploy`
 3. Wait for it... Profit! _(it'll take quite some time on the first deploy)_.
 4. The deploy command will output a webhook endpoint, called something like `NameOfStack.WebhookEndpoint`.
 5. Configure a hook in your Github org or repo to send `Workflow jobs` events to that endpoint.
-   - `https://github.schibsted.io/organizations/my-org/settings/hooks`
+   - `https://${GITHUB_HOST}/organizations/my-org/settings/hooks`
    - Content type: `application/json`.
    - Set a secret for the webhook and save that in AWS Parameter Store, for example in path `/github/webhhok/secret`.
 6. Create Github Personal Access Token with `workflow` and `admin:org` scopes. Save that token in AWS Parameter Store, for example in `/github/actions/token`.
 
 ## :ribbon: Example project
 
-#### Head over to :point_right: [`spp/github-actions-config`](https://github.schibsted.io/spp/github-actions-config) :point_left: for a real life demo app that is based on this CDK construct.
-
 ##### `package.json`
 
 ```json
 {
   "dependencies": {
-    "@spp/github-actions-self-hosted": "^0.9.2",
+    "@schibsted/github-actions-self-hosted": "^0.9.3",
     "aws-cdk-lib": "^2.3.0"
   }
 }
@@ -81,7 +79,7 @@ Something like this in `.npmrc` should do the trick:
 ```js
 #!/usr/bin/env node
 import { App } from 'aws-cdk-lib';
-import { GithubActionsRunners } from '@spp/github-actions-self-hosted';
+import { GithubActionsRunners } from '@schibsted/github-actions-self-hosted';
 
 const app = new App();
 new GithubActionsRunners(app, 'MyRunners', {
@@ -105,7 +103,7 @@ new GithubActionsRunners(app, 'MyRunners', {
       // An arbitrary name
       name: 'Labs1',
       // This can be either the name of a GH org or org/repo combination (e.g. my-org/my-repo)
-      scope: 'spt-mediaplatform-labs',
+      scope: 'my-org',
       // A path in AWS Parameter Store where a Github webhook secret is securly stored
       webhookSecretSsmPath: '/github/webhook/secret',
       // A path in AWS Parameter Store where a Github token is securely stored

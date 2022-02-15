@@ -1,10 +1,10 @@
 {
-  "name": "@spp/github-actions-self-hosted",
+  "name": "@schibsted/github-actions-self-hosted-cdk",
   "description": "Self-hosted Github Actions runners, CDK powered, on AWS 🚀",
   "version": "0.9.3",
   "repository": {
     "type": "git",
-    "url": "https://github.schibsted.io/spp/github-actions-self-hosted.git"
+    "url": "https://github.com/schibsted/github-actions-self-hosted-cdk.git"
   },
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -61,6 +61,6 @@
     "typescript": "^4.5.4"
   },
   "publishConfig": {
-    "registry": "https://npm.github.schibsted.io/"
+    "registry": "https://npm.pkg.github.com/"
   }
 }
