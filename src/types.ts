@@ -26,6 +26,7 @@ export interface Context {
 }
 
 export interface GithubActionsRunnersProps extends StackProps {
+  githubHost: string;
   runnerVersion?: string;
   debugMode?: boolean;
   privateSubnets?: boolean;
