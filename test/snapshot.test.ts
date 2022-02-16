@@ -12,16 +12,16 @@ test('Snapshot test', () => {
     githubHost: 'github.example.com',
     contexts: [
       {
-        name: 'Labs1',
-        scope: 'spt-mediaplatform-labs',
+        name: 'MyOrg',
+        scope: 'my-org',
         spot: true,
         webhookSecretSsmPath: '/github/webhook/secret',
         tokenSsmPath: '/github/actions/token',
         timeout: '10m',
       },
       {
-        name: 'Labs2',
-        scope: 'spt-mediaplatform-another-labs/my-repo',
+        name: 'SomeOrgMyRepo',
+        scope: 'some-other-org/my-repo',
         spot: false,
         webhookSecretSsmPath: '/github/webhook/another-secret',
         tokenSsmPath: '/github/actions/another-token',
