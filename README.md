@@ -30,7 +30,7 @@ It has been designed to be:
 
 ## Package distribution
 
-This NPM package is published to Github Packages in our Github Enterprise installation.
+This NPM package is published to Github Packages.
 
 See https://github.com/schibsted/github-actions-self-hosted-cdk/packages/1254444
 
