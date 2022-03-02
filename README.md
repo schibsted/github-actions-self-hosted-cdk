@@ -97,6 +97,7 @@ new GithubActionsRunners(app, 'MyRunners', {
     // The hosted zone for the domain. Must be in the same AWS/Route53 account.
     hostedZoneDomain: 'example.com',
   },
+  githubHost: 'github.com',
   // A list of all orgs and/or repos to configure
   contexts: [
     {
