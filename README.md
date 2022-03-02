@@ -113,6 +113,8 @@ new GithubActionsRunners(app, 'MyRunners', {
       spot: true,
       // Optional: Terminate a runner after some time period. Default: 30m
       timeout: '10m',
+      // Optional: Name of an (existing) runner group. Default: the 'Default' runner group.
+      group: 'my-runner-group',
     },
   ],
 });
