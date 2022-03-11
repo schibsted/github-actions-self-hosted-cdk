@@ -58,7 +58,7 @@ Something like this in `.npmrc` should do the trick:
 5. Configure a hook in your Github org or repo to send `Workflow jobs` events to that endpoint.
    - `https://${GITHUB_HOST}/organizations/my-org/settings/hooks`
    - Content type: `application/json`.
-   - Set a secret for the webhook and save that in AWS Parameter Store, for example in path `/github/webhhok/secret`.
+   - Set a secret for the webhook and save that in AWS Parameter Store, as `SecureString`, for example in path `/github/webhhok/secret`.
 6. Create Github Personal Access Token with `workflow` and `admin:org` scopes. Save that token in AWS Parameter Store, for example in `/github/actions/token`.
 
 ## :ribbon: Example project
@@ -142,3 +142,9 @@ jobs:
       - self-hosted
       - vm:t3.micro
 ```
+
+## Frequently asked questions
+
+#### _– "My spot instances aren't booting"_
+
+Head over to Cloudwatch Logs and see if there are any `AuthFailure.ServiceLinkedRoleCreationNotPermitted` errors. The fix for this is described here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-requests.html#service-linked-roles-spot-instance-requests
