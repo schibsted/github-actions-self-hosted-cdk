@@ -20,8 +20,9 @@ deregister_runner() {
 init() {
   GITHUB_TOKEN=$(aws ssm get-parameters --name ${GITHUB_TOKEN_SSM_PATH} --region ${AWS_REGION} --with-decryption | jq -r .Parameters[0].Value)
   AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
-  ORG=$(cut -d/ -f1 <<< ${RUNNER_SCOPE})
-  REPO=$(cut -d/ -f2 <<< ${RUNNER_SCOPE})
+  PARTS=(${RUNNER_SCOPE//// })
+  ORG=${PARTS[0]}
+  REPO=${PARTS[1]}
 
   if [[ ${GITHUB_HOST} = "github.com" ]]; then
     BASE_URI="https://api.${GITHUB_HOST}"
@@ -29,7 +30,7 @@ init() {
     BASE_URI="https://${GITHUB_HOST}/api/v3"
   fi
 
-  if [[ -z "${REPOSITORY}" ]]; then
+  if [[ -z "${REPO}" ]]; then
     TOKEN_REGISTRATION_URL="${BASE_URI}/orgs/${ORG}/actions/runners/registration-token"
   else
     TOKEN_REGISTRATION_URL="${BASE_URI}/repos/${ORG}/${REPO}/actions/runners/registration-token"
