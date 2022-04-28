@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.9.4] - 2022-04-28
+
+### Changed
+
+- Fixed a bug that made it impossible to use repo level scopes
+
 ## [0.9.3] - 2022-02-15
 
 ### Changed
