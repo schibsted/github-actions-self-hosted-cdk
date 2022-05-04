@@ -8,6 +8,7 @@ export interface WebhookEnvironment {
   spot: string;
   webhookSecretSsmPath: string;
   webhookSecretSsmArn: string;
+  volumeSize: string;
 }
 
 export interface Domain {
@@ -32,4 +33,5 @@ export interface GithubActionsRunnersProps extends StackProps {
   privateSubnets?: boolean;
   contexts?: Context[];
   domain?: Domain;
+  volumeSize?: number;
 }

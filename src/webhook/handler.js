@@ -6,6 +6,14 @@ const ec2 = new AWS.EC2();
 const ec2Params = {
   MinCount: 1,
   MaxCount: 1,
+  BlockDeviceMappings: [
+    {
+      DeviceName: '/dev/sda1',
+      Ebs: {
+        VolumeSize: process.env.volumeSize,
+      },
+    },
+  ],
   LaunchTemplate: {
     LaunchTemplateId: process.env.templateId,
     Version: process.env.templateVersion,

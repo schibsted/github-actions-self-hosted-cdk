@@ -1196,7 +1196,7 @@ sudo shutdown -h now",
       "Properties": Object {
         "Code": Object {
           "S3Bucket": "cdk-hnb659fds-assets-abc-123-eu-north-1",
-          "S3Key": "cdf441ee68e3b0805fd6e37d57f55fa7704bef0263e65ee55b478b48153e67de.zip",
+          "S3Key": "08af5971f1de2c098a78f26df3b9779e412ac153ef2d22d12f9f70f2e254c76a.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -1214,6 +1214,7 @@ sudo shutdown -h now",
                 "LatestVersionNumber",
               ],
             },
+            "volumeSize": "128",
             "webhookSecretSsmArn": "arn:aws:ssm:eu-north-1:abc-123:parameter/github/webhook/secret",
             "webhookSecretSsmPath": "/github/webhook/secret",
           },
@@ -1267,7 +1268,7 @@ sudo shutdown -h now",
       "Properties": Object {
         "Code": Object {
           "S3Bucket": "cdk-hnb659fds-assets-abc-123-eu-north-1",
-          "S3Key": "cdf441ee68e3b0805fd6e37d57f55fa7704bef0263e65ee55b478b48153e67de.zip",
+          "S3Key": "08af5971f1de2c098a78f26df3b9779e412ac153ef2d22d12f9f70f2e254c76a.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -1285,6 +1286,7 @@ sudo shutdown -h now",
                 "LatestVersionNumber",
               ],
             },
+            "volumeSize": "128",
             "webhookSecretSsmArn": "arn:aws:ssm:eu-north-1:abc-123:parameter/github/webhook/another-secret",
             "webhookSecretSsmPath": "/github/webhook/another-secret",
           },

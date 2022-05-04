@@ -60,6 +60,7 @@ export class GithubActionsRunners extends Stack {
         spot: (context.spot ?? true).toString(),
         webhookSecretSsmPath: context.webhookSecretSsmPath,
         webhookSecretSsmArn: `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter${context.webhookSecretSsmPath}`,
+        volumeSize: String(props.volumeSize ?? 128),
       });
       const endpoint = webhook.domain
         ? `https://${webhook.domain.domainName}/${context.scope}`
