@@ -98,6 +98,8 @@ new GithubActionsRunners(app, 'MyRunners', {
     hostedZoneDomain: 'example.com',
   },
   githubHost: 'github.com',
+  // Size of the volume mounted inside the runner in gigabytes (Default: 128 GB)
+  volumeSize: 256,
   // A list of all orgs and/or repos to configure
   contexts: [
     {
