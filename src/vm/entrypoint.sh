@@ -7,6 +7,7 @@ RUNNER_SCOPE=$RUNNER_SCOPE
 RUNNER_TIMEOUT=$RUNNER_TIMEOUT
 RUNNER_GROUP=$RUNNER_GROUP
 GITHUB_HOST=$GITHUB_HOST
+SHUTDOWN_TIME=$SHUTDOWN_TIME
 
 RUNNER_WORKDIR=_work
 
@@ -69,4 +70,4 @@ echo "Running..."
 run
 
 echo "Shutting down..."
-sudo shutdown -h now
+sudo shutdown -h ${SHUTDOWN_TIME}

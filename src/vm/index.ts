@@ -113,6 +113,7 @@ export const setupRunners = (
     .replace('$GITHUB_HOST', props.githubHost)
     .replace('$RUNNER_SCOPE', context.scope)
     .replace('$RUNNER_GROUP', context.group ?? 'default')
+    .replace('$SHUTDOWN_TIME', props.debugMode ? '+60' : 'now')
     .replace('$RUNNER_TIMEOUT', context.timeout ?? '60m');
   const template = new LaunchTemplate(stack, `LaunchTemplate/${context.name}`, {
     launchTemplateName: `${stack.artifactId}/${context.name}`,
