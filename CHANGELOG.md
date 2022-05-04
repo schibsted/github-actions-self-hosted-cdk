@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.10.0] - 2022-05-04
+
+### Added
+
+- Made volume size configurable
+
 ## [0.9.4] - 2022-04-28
 
 ### Changed
