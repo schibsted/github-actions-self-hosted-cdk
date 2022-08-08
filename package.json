@@ -1,7 +1,7 @@
 {
   "name": "@schibsted/github-actions-self-hosted-cdk",
   "description": "Self-hosted Github Actions runners, CDK powered, on AWS 🚀",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/schibsted/github-actions-self-hosted-cdk.git"
