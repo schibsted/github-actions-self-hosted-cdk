@@ -41,6 +41,10 @@ init() {
     -H "${AUTH_HEADER}" \
     "${TOKEN_REGISTRATION_URL}" \
     | jq -r '.token')"
+
+  unset GITHUB_TOKEN_SSM_PATH
+  unset GITHUB_TOKEN
+  unset AUTH_HEADER
 }
 
 configure() {
@@ -51,6 +55,8 @@ configure() {
     --runnergroup "${RUNNER_GROUP}" \
     --unattended \
     --ephemeral
+
+  unset RUNNER_TOKEN
 }
 
 run() {
