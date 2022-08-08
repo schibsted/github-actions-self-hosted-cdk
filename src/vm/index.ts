@@ -130,8 +130,12 @@ export const setupRunners = (
         'ssm-policy': new PolicyDocument({
           statements: [
             new PolicyStatement({
-              actions: ['ssm:*'],
-              resources: ['*'],
+              actions: ['ssm:GetParameters'],
+              resources: [
+                `arn:aws:ssm:${region}:${props.env?.account!}:parameter${
+                  context.tokenSsmPath
+                }`,
+              ],
             }),
           ],
         }),

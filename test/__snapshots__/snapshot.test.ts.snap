@@ -611,9 +611,9 @@ sudo shutdown -h now",
             "PolicyDocument": Object {
               "Statement": Array [
                 Object {
-                  "Action": "ssm:*",
+                  "Action": "ssm:GetParameters",
                   "Effect": "Allow",
-                  "Resource": "*",
+                  "Resource": "arn:aws:ssm:eu-north-1:abc-123:parameter/github/actions/token",
                 },
               ],
               "Version": "2012-10-17",
@@ -643,9 +643,9 @@ sudo shutdown -h now",
             "PolicyDocument": Object {
               "Statement": Array [
                 Object {
-                  "Action": "ssm:*",
+                  "Action": "ssm:GetParameters",
                   "Effect": "Allow",
-                  "Resource": "*",
+                  "Resource": "arn:aws:ssm:eu-north-1:abc-123:parameter/github/actions/another-token",
                 },
               ],
               "Version": "2012-10-17",
